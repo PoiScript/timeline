@@ -1,4 +1,4 @@
-package com.example.alex.googlecalendartools;
+package com.poipoipo.timeline;
 
 import org.junit.Test;
 

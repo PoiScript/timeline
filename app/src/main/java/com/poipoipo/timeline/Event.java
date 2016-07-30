@@ -1,4 +1,4 @@
-package com.example.alex.googlecalendartools;
+package com.poipoipo.timeline;
 
 import java.util.Calendar;
 

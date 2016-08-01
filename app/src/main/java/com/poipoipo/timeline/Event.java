@@ -1,61 +1,66 @@
 package com.poipoipo.timeline;
 
-import java.util.Calendar;
-
-/**
- * Created by alex on 6/2/16.
- */
 public class Event {
 
-    private static final int COMPELETE = 0;
-    private static final int NOT_END = 1;
-    private static final int NOT_START = 2;
+    public static final int COMPLETE = 0;
+    public static final int NOT_END = 1;
+    public static final int NOT_START = 2;
 
-    private String Title;
-    private Calendar StartCal;
-    private Calendar EndCal;
-    private int duration;
+    public static final String TITLE = "title";
+    public static final String START = "start";
+    public static final String END = "end";
+    public static final String STATE = "state";
+
+    private int id;
+    private String title;
+    private int start;
+    private int end;
     private int state;
 
-    public void Event (String Title, Calendar StartCal, Calendar EndCal){
-        this.Title = Title;
-        this.StartCal = StartCal;
-        this.EndCal = EndCal;
-        this.state = COMPELETE;
+    public Event(){}
+
+    public Event (int start) {
+        this.start = start;
+        state = NOT_END;
     }
 
-    public void Event (String Title, Calendar calendar, int state){
-        this.Title = Title;
-        this.state = state;
-        if (this.state == NOT_END){
-            this.StartCal = calendar;
-        } else {
-            this.EndCal = calendar;
-        }
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setTitle (String title){
-        this.Title = title;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setStartCal (Calendar cal){
-        this.StartCal = cal;
+    public void setStart(int start) {
+        this.start = start;
     }
 
-    public void setEndCal (Calendar cal){
-        this.EndCal = cal;
+    public void setEnd(int end) {
+        this.end = end;
     }
 
-    public String getTitle(){
-        return Title;
+    public int getId() {
+        return id;
     }
 
-    public Calendar getStartCal(){
-        return StartCal;
+    public String getTitle() {
+        return title;
     }
 
-    public Calendar getEndCal(){
-        return EndCal;
+    public int getStart() {
+        return start;
     }
 
+    public int getEnd() {
+        return end;
+    }
+
+    public int getDuration() {
+        return end - start;
+    }
+
+    public int getState() {
+        return state;
+    }
 }

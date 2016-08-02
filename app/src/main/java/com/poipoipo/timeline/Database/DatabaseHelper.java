@@ -8,10 +8,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_EVENT = "create table Event ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "title TEXT, "
-            + "state INTEGER"
+            + "category INTEGER, "
+            + "title INTEGER, "
+            + "state INTEGER, "
             + "start INTEGER, "
-            + "end INTEGER)";
+            + "end INTEGER, "
+            + "location INTEGER, "
+            + "note TEXT)";
+
+    public static final String CREATE_CATEGORY = "create table Category ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "value TEXT, "
+            + "usage INTEGER)";
+
+    public static final String CREATE_TITLE = "create table Title ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "value TEXT, "
+            + "usage INTEGER)";
+
+    public static final String CREATE_LOCATION = "create table Location ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "value TEXT, "
+            + "usage INTEGER)";
 
     Context mContext;
 
@@ -23,6 +41,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_EVENT);
+        db.execSQL(CREATE_CATEGORY);
+        db.execSQL(CREATE_TITLE);
+        db.execSQL(CREATE_LOCATION);
     }
 
     @Override

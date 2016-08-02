@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.poipoipo.timeline.Event;
+import com.poipoipo.timeline.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +14,17 @@ import java.util.List;
 public class DatabaseEvent {
 
     public static final String DATABASE_NAME = "Event.db";
-    public static final String TABLE_NAME = "Event";
+    public static final String TABLE_EVENT = "Event";
+    public static final String TABLE_CATEGORY = "Category";
+    public static final String TABLE_TITLE = "Title";
+    public static final String TABLE_LOCATION = "Location";
     public static final int VERSION = 1;
 
     SQLiteDatabase database;
     ContentValues values = new ContentValues();
     Cursor cursor;
     List<Event> list = new ArrayList<>();
+    List<Tag> tags = new ArrayList<>();
 
     public DatabaseEvent(Context context) {
         database = new DatabaseHelper(context, DATABASE_NAME, null, VERSION).getWritableDatabase();
@@ -27,19 +32,18 @@ public class DatabaseEvent {
 
     public void insert(Event event) {
         values.clear();
+        values.put("category", event.getCategory());
         values.put("title", event.getTitle());
         values.put("state", event.getState());
         switch (event.getState()) {
-            case Event.NOT_END:
+            case Event.EVENT:
+                values.put("end", event.getStart());
+            case Event.BOOKMARK:
                 values.put("start", event.getStart());
-                break;
-            case Event.COMPLETE:
-                values.put("data", event.getStart());
-            case Event.NOT_START:
-                values.put("data", event.getEnd());
-                break;
         }
-        database.insert(TABLE_NAME, null, values);
+        values.put("location", event.getLocation());
+        values.put("note", event.getNote());
+        database.insert(TABLE_EVENT, null, values);
     }
 
     public void insert(List<Event> list) {
@@ -48,34 +52,67 @@ public class DatabaseEvent {
         }
     }
 
-    public void update(int id, String[] which, String[] whichValues) {
+    public void insert(String tag, String value) {
         values.clear();
-        for (int i = 0; i <= which.length; i++) {
-            values.put(which[i], whichValues[i]);
+        values.put(tag, value);
+        database.insert(tag, null, values);
+    }
+
+    public void update(int start, String[] tags, String[] tagsValues) {
+        if (tags.length == tagsValues.length) {
+            values.clear();
+            for (int i = 0; i <= tags.length; i++) {
+                values.put(tags[i], tagsValues[i]);
+            }
+            database.update(TABLE_EVENT, values, "start = ?", new String[]{Integer.toString(start)});
         }
-        database.update(DATABASE_NAME, values, "id = ?", new String[]{Integer.toString(id)});
     }
 
-    public void delete() {
-        database.delete(DATABASE_NAME, null, null);
+    public void update(String tag, String before, String after) {
+        values.clear();
+        values.put(tag, after);
+        database.update(tag, values, "value = ?", new String[]{before});
     }
 
-    public void delete(int id) {
-        database.delete(DATABASE_NAME, "id = ?", new String[]{Integer.toString(id)});
+    public void delete(String table) {
+        database.delete(table, null, null);
+    }
+
+    public void delete(int start) {
+        database.delete(TABLE_EVENT, "start = ?", new String[]{Integer.toString(start)});
+    }
+
+    public void delete(String tag, String which) {
+        database.delete(tag, "value  = ?", new String[]{which});
     }
 
     public List<Event> query() {
-        cursor = database.query(TABLE_NAME, null, null, null, null, null, null);
+        cursor = database.query(TABLE_EVENT, null, null, null, null, null, null);
         queryTraverse();
         return list;
     }
 
     public List<Event> query(int dataMin, int dataMax) {
         String where = "start < ? and start > ?";
-        String[] whereValue = {Integer.toString(dataMax), Integer.toString(dataMin)};
-        cursor = database.query(TABLE_NAME, null, where, whereValue, null, null, null);
+        String[] whereValues = {Integer.toString(dataMax), Integer.toString(dataMin)};
+        cursor = database.query(TABLE_EVENT, null, where, whereValues, null, null, null);
         queryTraverse();
         return list;
+    }
+
+    public List<Tag> query(String tag) {
+        cursor = database.query(tag, null, null, null, null, null, null);
+        tags.clear();
+        if (cursor.moveToFirst()) {
+            do {
+                Tag tag1 = new Tag();
+                tag1.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                tag1.setValue(cursor.getString(cursor.getColumnIndex("value")));
+                tags.add(tag1);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return tags;
     }
 
     private void queryTraverse() {
@@ -83,14 +120,13 @@ public class DatabaseEvent {
         if (cursor.moveToFirst()) {
             do {
                 Event event = new Event();
-                event.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+                event.setCategory(cursor.getInt(cursor.getColumnIndex("category")));
+                event.setTitle(cursor.getInt(cursor.getColumnIndex("title")));
+                event.setState(cursor.getInt(cursor.getColumnIndex("state")));
                 switch (event.getState()) {
-                    case Event.NOT_START:
+                    case Event.BOOKMARK:
                         event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
-                        break;
-                    case Event.COMPLETE:
-                        event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
-                    case Event.NOT_END:
+                    case Event.EVENT:
                         event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
                 }
                 list.add(event);

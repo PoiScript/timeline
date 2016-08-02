@@ -1,54 +1,138 @@
 package com.poipoipo.timeline.Database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+import com.poipoipo.timeline.Data.Event;
+import com.poipoipo.timeline.Data.Tag;
 
-    public static final String CREATE_EVENT = "create table Event ("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "category INTEGER, "
-            + "title INTEGER, "
-            + "state INTEGER, "
-            + "start INTEGER, "
-            + "end INTEGER, "
-            + "location INTEGER, "
-            + "note TEXT)";
+import java.util.ArrayList;
+import java.util.List;
 
-    public static final String CREATE_CATEGORY = "create table Category ("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "value TEXT, "
-            + "usage INTEGER)";
+public class DatabaseHelper {
 
-    public static final String CREATE_TITLE = "create table Title ("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "value TEXT, "
-            + "usage INTEGER)";
+    public static final String DATABASE_NAME = "Event.db";
+    public static final String TABLE_EVENT = "Event";
+    public static final String TABLE_CATEGORY = "Category";
+    public static final String TABLE_TITLE = "Title";
+    public static final String TABLE_LOCATION = "Location";
+    public static final int VERSION = 1;
 
-    public static final String CREATE_LOCATION = "create table Location ("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "value TEXT, "
-            + "usage INTEGER)";
+    SQLiteDatabase database;
+    ContentValues values = new ContentValues();
+    Cursor cursor;
+    List<Event> list = new ArrayList<>();
+    List<Tag> tags = new ArrayList<>();
 
-    Context mContext;
-
-    public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
-        mContext = context;
+    public DatabaseHelper(Context context) {
+        database = new DatabaseOpenHelper(context, DATABASE_NAME, null, VERSION).getWritableDatabase();
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_EVENT);
-        db.execSQL(CREATE_CATEGORY);
-        db.execSQL(CREATE_TITLE);
-        db.execSQL(CREATE_LOCATION);
+    public void insert(Event event) {
+        values.clear();
+        values.put("category", event.getCategory());
+        values.put("title", event.getTitle());
+        values.put("state", event.getState());
+        switch (event.getState()) {
+            case Event.EVENT:
+                values.put("end", event.getStart());
+            case Event.BOOKMARK:
+                values.put("start", event.getStart());
+        }
+        values.put("location", event.getLocation());
+        values.put("note", event.getNote());
+        database.insert(TABLE_EVENT, null, values);
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void insert(List<Event> list) {
+        for (Event event : list) {
+            insert(event);
+        }
+    }
 
+    public void insert(String tag, String value) {
+        values.clear();
+        values.put(tag, value);
+        database.insert(tag, null, values);
+    }
+
+    public void update(int start, String[] tags, String[] tagsValues) {
+        if (tags.length == tagsValues.length) {
+            values.clear();
+            for (int i = 0; i <= tags.length; i++) {
+                values.put(tags[i], tagsValues[i]);
+            }
+            database.update(TABLE_EVENT, values, "start = ?", new String[]{Integer.toString(start)});
+        }
+    }
+
+    public void update(String tag, String before, String after) {
+        values.clear();
+        values.put(tag, after);
+        database.update(tag, values, "value = ?", new String[]{before});
+    }
+
+    public void delete(String table) {
+        database.delete(table, null, null);
+    }
+
+    public void delete(int start) {
+        database.delete(TABLE_EVENT, "start = ?", new String[]{Integer.toString(start)});
+    }
+
+    public void delete(String tag, String which) {
+        database.delete(tag, "value  = ?", new String[]{which});
+    }
+
+    public List<Event> query() {
+        cursor = database.query(TABLE_EVENT, null, null, null, null, null, null);
+        queryTraverse();
+        return list;
+    }
+
+    public List<Event> query(int dataMin, int dataMax) {
+        String where = "start < ? and start > ?";
+        String[] whereValues = {Integer.toString(dataMax), Integer.toString(dataMin)};
+        cursor = database.query(TABLE_EVENT, null, where, whereValues, null, null, null);
+        queryTraverse();
+        return list;
+    }
+
+    private void queryTraverse() {
+        list.clear();
+        if (cursor.moveToFirst()) {
+            do {
+                Event event = new Event();
+                event.setCategory(cursor.getInt(cursor.getColumnIndex("category")));
+                event.setTitle(cursor.getInt(cursor.getColumnIndex("title")));
+                event.setState(cursor.getInt(cursor.getColumnIndex("state")));
+                switch (event.getState()) {
+                    case Event.BOOKMARK:
+                        event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
+                    case Event.EVENT:
+                        event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
+                }
+                list.add(event);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+    }
+
+    public List<Tag> query(String tag) {
+        cursor = database.query(tag, null, null, null, null, null, null);
+        tags.clear();
+        if (cursor.moveToFirst()) {
+            do {
+                Tag tag1 = new Tag();
+                tag1.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                tag1.setValue(cursor.getString(cursor.getColumnIndex("value")));
+                tags.add(tag1);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return tags;
     }
 }
 

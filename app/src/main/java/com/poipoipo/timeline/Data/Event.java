@@ -1,4 +1,4 @@
-package com.poipoipo.timeline;
+package com.poipoipo.timeline.Data;
 
 import java.io.Serializable;
 

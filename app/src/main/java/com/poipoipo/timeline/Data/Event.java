@@ -1,4 +1,4 @@
-package com.poipoipo.timeline.Data;
+package com.poipoipo.timeline.data;
 
 import java.io.Serializable;
 
@@ -7,9 +7,12 @@ public class Event implements Serializable {
     public static final int BOOKMARK = 0;
     public static final int EVENT = 1;
 
+    public static final String CATEGORY = "category";
     public static final String TITLE = "title";
     public static final String START = "start";
     public static final String END = "end";
+    public static final String  LOCATION = "location";
+    public static final String NOTE = "note";
     public static final String STATE = "state";
 
     private int title;

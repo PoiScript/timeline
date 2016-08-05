@@ -6,31 +6,41 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.poipoipo.timeline.R;
+import com.poipoipo.timeline.data.Label;
 
 public class FragmentLabels extends Fragment {
 
-    private int layout;
-    public static final String FRAGMENT_TYPE = "type";
-    public static final int TIMELINE = 0;
-    public static final int DASHBOARD = 1;
+    public static final String LABEL_TYPE = "type";
+    private int type;
+
+    private TextView textView;
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        textView = (TextView) view.findViewById(R.id.label_text);
+        switch (type) {
+            case Label.CATEGORY:
+                textView.setText("CATEGORY");
+                break;
+            case Label.LOCATION:
+                textView.setText("LOCATION");
+                break;
+            case Label.TITLE:
+                textView.setText("TITLE");
+        }
+    }
 
     @Override
     public void setArguments(Bundle args) {
-        switch (args.getInt(FRAGMENT_TYPE)){
-            case TIMELINE:
-                layout = R.layout.fragment_timeline;
-                break;
-            case DASHBOARD:
-                layout = R.layout.fragment_dashboard;
-                break;
-        }
+        type = args.getInt(LABEL_TYPE);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(layout, null);
+        return inflater.inflate(R.layout.fragment_label, null);
     }
 }

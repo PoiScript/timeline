@@ -1,12 +1,12 @@
-package com.poipoipo.timeline.Database;
+package com.poipoipo.timeline.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.poipoipo.timeline.Data.Event;
-import com.poipoipo.timeline.Data.Tag;
+import com.poipoipo.timeline.data.Event;
+import com.poipoipo.timeline.data.Label;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class DatabaseHelper {
     ContentValues values = new ContentValues();
     Cursor cursor;
     List<Event> list = new ArrayList<>();
-    List<Tag> tags = new ArrayList<>();
+    List<Label> labels = new ArrayList<>();
 
     public DatabaseHelper(Context context) {
         database = new DatabaseOpenHelper(context, DATABASE_NAME, null, VERSION).getWritableDatabase();
@@ -120,19 +120,19 @@ public class DatabaseHelper {
         cursor.close();
     }
 
-    public List<Tag> query(String tag) {
+    public List<Label> query(String tag) {
         cursor = database.query(tag, null, null, null, null, null, null);
-        tags.clear();
+        labels.clear();
         if (cursor.moveToFirst()) {
             do {
-                Tag tag1 = new Tag();
-                tag1.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                tag1.setValue(cursor.getString(cursor.getColumnIndex("value")));
-                tags.add(tag1);
+                Label label1 = new Label();
+                label1.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                label1.setValue(cursor.getString(cursor.getColumnIndex("value")));
+                labels.add(label1);
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return tags;
+        return labels;
     }
 }
 

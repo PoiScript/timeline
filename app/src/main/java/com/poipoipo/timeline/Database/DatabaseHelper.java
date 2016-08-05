@@ -2,14 +2,18 @@ package com.poipoipo.timeline.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.data.Label;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseHelper {
 
@@ -18,16 +22,21 @@ public class DatabaseHelper {
     public static final String TABLE_CATEGORY = "Category";
     public static final String TABLE_TITLE = "Title";
     public static final String TABLE_LOCATION = "Location";
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 
     SQLiteDatabase database;
     ContentValues values = new ContentValues();
     Cursor cursor;
     List<Event> list = new ArrayList<>();
-    List<Label> labels = new ArrayList<>();
+    Map<Integer, String> categories;
+    Map<Integer, String> titles;
+    Map<Integer, String> locations;
 
     public DatabaseHelper(Context context) {
         database = new DatabaseOpenHelper(context, DATABASE_NAME, null, VERSION).getWritableDatabase();
+        categories = query(TABLE_CATEGORY);
+        titles = query(TABLE_TITLE);
+        locations = query(TABLE_LOCATION);
     }
 
     public void insert(Event event) {
@@ -58,20 +67,20 @@ public class DatabaseHelper {
         database.insert(tag, null, values);
     }
 
-    public void update(int start, String[] tags, String[] tagsValues) {
-        if (tags.length == tagsValues.length) {
+    public void update(int start, String[] labels, String[] labelsValues) {
+        if (labels.length == labelsValues.length) {
             values.clear();
-            for (int i = 0; i <= tags.length; i++) {
-                values.put(tags[i], tagsValues[i]);
+            for (int i = 0; i <= labels.length; i++) {
+                values.put(labels[i], labelsValues[i]);
             }
             database.update(TABLE_EVENT, values, "start = ?", new String[]{Integer.toString(start)});
         }
     }
 
-    public void update(String tag, String before, String after) {
+    public void update(String label, String before, String after) {
         values.clear();
-        values.put(tag, after);
-        database.update(tag, values, "value = ?", new String[]{before});
+        values.put(label, after);
+        database.update(label, values, "value = ?", new String[]{before});
     }
 
     public void delete(String table) {
@@ -82,8 +91,8 @@ public class DatabaseHelper {
         database.delete(TABLE_EVENT, "start = ?", new String[]{Integer.toString(start)});
     }
 
-    public void delete(String tag, String which) {
-        database.delete(tag, "value  = ?", new String[]{which});
+    public void delete(String label, String which) {
+        database.delete(label, "value  = ?", new String[]{which});
     }
 
     public List<Event> query() {
@@ -105,8 +114,8 @@ public class DatabaseHelper {
         if (cursor.moveToFirst()) {
             do {
                 Event event = new Event();
-                event.setCategory(cursor.getInt(cursor.getColumnIndex("category")));
-                event.setTitle(cursor.getInt(cursor.getColumnIndex("title")));
+                event.setCategory(categories.get(cursor.getInt(cursor.getColumnIndex("category"))));
+                event.setTitle(titles.get(cursor.getInt(cursor.getColumnIndex("title"))));
                 event.setState(cursor.getInt(cursor.getColumnIndex("state")));
                 switch (event.getState()) {
                     case Event.BOOKMARK:
@@ -114,25 +123,22 @@ public class DatabaseHelper {
                     case Event.EVENT:
                         event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
                 }
+                event.setLocation(locations.get(cursor.getInt(cursor.getColumnIndex("location"))));
                 list.add(event);
             } while (cursor.moveToNext());
         }
         cursor.close();
     }
 
-    public List<Label> query(String tag) {
-        cursor = database.query(tag, null, null, null, null, null, null);
-        labels.clear();
+    public Map<Integer, String> query(String label) {
+        Map<Integer, String> map = new  HashMap<Integer, String>;
+        cursor = database.query(label, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                Label label1 = new Label();
-                label1.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                label1.setValue(cursor.getString(cursor.getColumnIndex("value")));
-                labels.add(label1);
+                map.put(cursor.getInt(cursor.getColumnIndex("id")), cursor.getString(cursor.getColumnIndex("value")));
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return labels;
+        return map;
     }
 }
-

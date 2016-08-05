@@ -11,26 +11,27 @@ public class Event implements Serializable {
     public static final String TITLE = "title";
     public static final String START = "start";
     public static final String END = "end";
-    public static final String  LOCATION = "location";
+    public static final String LOCATION = "location";
     public static final String NOTE = "note";
     public static final String STATE = "state";
 
-    private int title;
+    private String title;
     private int start;
     private int end;
     private int state;
-    private int category;
-    private int location;
-    private int note;
+    private String category;
+    private String location;
+    private String note;
 
-    public Event(){}
+    public Event() {
+    }
 
-    public Event (int start) {
+    public Event(int start) {
         this.start = start;
         state = BOOKMARK;
     }
 
-    public void setTitle(int title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -46,19 +47,19 @@ public class Event implements Serializable {
         this.state = state;
     }
 
-    public void setCategory(int category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
-    public void setLocation(int location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 
-    public void setNote(int note) {
+    public void setNote(String note) {
         this.note = note;
     }
 
-    public int getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -72,17 +73,17 @@ public class Event implements Serializable {
 
     public int getState() {
         return state;
-   }
+    }
 
-    public int getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public int getLocation() {
+    public String  getLocation() {
         return location;
     }
 
-    public int getNote() {
+    public String  getNote() {
         return note;
     }
 }

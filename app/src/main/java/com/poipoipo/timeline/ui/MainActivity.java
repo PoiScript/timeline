@@ -17,12 +17,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.facebook.stetho.Stetho;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.data.Label;
+import com.poipoipo.timeline.database.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "MainActivity";
 
     private DrawerLayout drawerLayout;
     public static final int MESSAGE_DIALOG = 1;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity
     DetailDialogFragment dialogFragment;
     FragmentManager manager;
     ActionBar actionBar;
+    DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        databaseHelper = new DatabaseHelper(this);
+
+        /*Stetho Debug*/
+        Stetho.initializeWithDefaults(this);
+        Log.d(TAG, "onCreate: Stetho Running");
 
         fragment = new FragmentTimeline();
         manager = getSupportFragmentManager();

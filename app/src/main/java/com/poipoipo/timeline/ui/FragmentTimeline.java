@@ -29,10 +29,12 @@ public class FragmentTimeline extends Fragment {
 
     public List<Event> initData(){
         List<Event> list = new ArrayList<>();
-        list.add(new Event(233));
-        list.add(new Event(233));
-        list.add(new Event(233));
-        list.add(new Event(233));
+        for (int i = 0; i < 10; i++){
+            list.add(new Event(233));
+            list.add(new Event(233));
+            list.add(new Event(233));
+            list.add(new Event(233));
+        }
         return list;
     }
 

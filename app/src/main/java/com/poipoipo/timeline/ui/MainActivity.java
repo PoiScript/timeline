@@ -3,6 +3,9 @@ package com.poipoipo.timeline.ui;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
@@ -15,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
@@ -28,19 +32,19 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
 
     private DrawerLayout drawerLayout;
-    public static final int MESSAGE_DIALOG = 1;
+    public static final int MESSAGE_CREATE_EVENT = 1, MESSAGE_QUICK_CREATE = 2, MESSAGE_DETAIL_DIALOG = 3, MESSAGE_REFRESH = 4;
     Fragment fragment;
-    DetailDialogFragment dialogFragment;
+    DialogFragmentDetail dialogFragment;
     FragmentManager manager;
     ActionBar actionBar;
-    DatabaseHelper databaseHelper;
+    public DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
         databaseHelper = new DatabaseHelper(this);
 
         /*Stetho Debug*/
@@ -56,16 +60,21 @@ public class MainActivity extends AppCompatActivity
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
+//                handler.obtainMessage(MainActivity.MESSAGE_CREATE_EVENT).sendToTarget();
 //            }
 //        });
-
+//        fab.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//                handler.obtainMessage(MainActivity.MESSAGE_QUICK_CREATE).sendToTarget();
+//                return true;
+//            }
+//        });
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.setDrawerListener(toggle);
-        toggle.syncState();
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawerLayout.setDrawerListener(toggle);
+//        toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -96,7 +105,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         actionBarModify(item.getItemId());
@@ -129,7 +137,7 @@ public class MainActivity extends AppCompatActivity
 //            case R.id.nav_about:
 //                Toast.makeText(getApplicationContext(), R.string.not_done, Toast.LENGTH_SHORT).show();
         }
-        manager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+//        manager.beginTransaction().replace(R.id.content_frame, fragment).commit();
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -158,4 +166,25 @@ public class MainActivity extends AppCompatActivity
     public void doPositiveClick() {
         Log.d("DEBUGGING", "User clicks on OK");
     }
+
+    public final Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_QUICK_CREATE:
+                    Long time = System.currentTimeMillis() / 1000;
+                    Integer timeStamp = time.intValue();
+                    databaseHelper.insert(new Event(timeStamp));
+                    Toast.makeText(getApplicationContext(), "Event Created", Toast.LENGTH_SHORT).show();
+                    break;
+                case MESSAGE_REFRESH:
+//                    ((FragmentTimeline) getSupportFragmentManager().findFragmentById(R.id.content_frame)).refreshDone();
+                    break;
+                case MESSAGE_DETAIL_DIALOG:
+                    dialogFragment = DialogFragmentDetail.newInstance(databaseHelper.query(msg.arg1));
+                    dialogFragment.show(getFragmentManager(), "dialog");
+            }
+        }
+    };
+
 }

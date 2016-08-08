@@ -95,6 +95,22 @@ public class DatabaseHelper {
         database.delete(label, "value  = ?", new String[]{which});
     }
 
+    public Event query(int start){
+        cursor = database.query(TABLE_EVENT, null, "start = ?", new String[] {Integer.toString(start)}, null, null, null);
+        Event event = new Event();
+        event.setCategory(categories.get(cursor.getInt(cursor.getColumnIndex("category"))));
+        event.setTitle(titles.get(cursor.getInt(cursor.getColumnIndex("title"))));
+        event.setState(cursor.getInt(cursor.getColumnIndex("state")));
+        switch (event.getState()) {
+            case Event.BOOKMARK:
+                event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
+            case Event.EVENT:
+                event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
+        }
+        event.setLocation(locations.get(cursor.getInt(cursor.getColumnIndex("location"))));
+        return event;
+    }
+
     public List<Event> query() {
         cursor = database.query(TABLE_EVENT, null, null, null, null, null, null);
         queryTraverse();

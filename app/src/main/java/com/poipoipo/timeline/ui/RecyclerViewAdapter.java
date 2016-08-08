@@ -20,7 +20,7 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.EventsViewHolder> {
     private List<Event> events;
     private Context context;
-    private DetailDialogFragment dialogFragment;
+    private DialogFragmentDetail dialogFragment;
 
     public RecyclerViewAdapter(List<Event> events, Context context) {
         this.events = events;
@@ -29,7 +29,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     static class EventsViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        TextView category;
         TextView title;
         TextView time;
         TextView location;
@@ -66,7 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View view) {
                 FragmentManager manager = ((Activity) context).getFragmentManager();
-                dialogFragment = DetailDialogFragment.newInstance(events.get(holder.getAdapterPosition()));
+                dialogFragment = DialogFragmentDetail.newInstance(events.get(holder.getAdapterPosition()));
                 dialogFragment.show(manager, "dialog");
             }
         });

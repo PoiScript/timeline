@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -15,7 +13,7 @@ import android.widget.TextView;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
 
-public class DetailDialogFragment extends DialogFragment {
+public class DialogFragmentDetail extends DialogFragment {
     LayoutInflater inflater;
     View view;
     private TextView category;
@@ -36,15 +34,15 @@ public class DetailDialogFragment extends DialogFragment {
             note = (EditText) view.findViewById(R.id.dialog_note);
     }
 
-    static DetailDialogFragment newInstance(Event event) {
-        DetailDialogFragment fragment = new DetailDialogFragment();
+    static DialogFragmentDetail newInstance(Event event) {
+        DialogFragmentDetail fragment = new DialogFragmentDetail();
         Bundle args = new Bundle();
-        args.putInt(Event.CATEGORY, event.getCategory());
-        args.putInt(Event.TITLE, event.getTitle());
+        args.putString(Event.CATEGORY, event.getCategory());
+        args.putString(Event.TITLE, event.getTitle());
         args.putInt(Event.START, event.getStart());
         args.putInt(Event.END, event.getEnd());
-        args.putInt(Event.LOCATION, event.getLocation());
-        args.putInt(Event.NOTE, event.getNote());
+        args.putString(Event.LOCATION, event.getLocation());
+        args.putString(Event.NOTE, event.getNote());
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,6 +56,11 @@ public class DetailDialogFragment extends DialogFragment {
                         ((MainActivity) getActivity()).doPositiveClick();
                     }
                 });
+        category.setText(getArguments().getString(Event.CATEGORY));
+        title.setText(getArguments().getString(Event.TITLE));
+        time.setText(getArguments().getInt(Event.START) + "");
+        location.setText(getArguments().getString(Event.LOCATION));
+        note.setText(getArguments().getString(Event.NOTE));
         return builder.create();
     }
 }

@@ -37,7 +37,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public EventsViewHolder(final View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.event_card);
-            category = (TextView) view.findViewById(R.id.event_category);
             title = (TextView) view.findViewById(R.id.event_title);
             time = (TextView) view.findViewById(R.id.event_time);
             location = (TextView) view.findViewById(R.id.event_location);
@@ -52,14 +51,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(final EventsViewHolder holder, int position) {
-//        holder.category.setText(events.get(position).getCategory());
-//        holder.title.setText(events.get(position).getTitle());
-//        holder.time.setText(events.get(position).getStart());
-//        holder.location.setText(events.get(position).getLocation());
-        holder.category.setText("Category" + ": ");
-        holder.title.setText("Title");
-        holder.location.setText("Location");
-        holder.time.setText("23:33-23:33");
+        if (events.get(position).getCategory() == ""){
+            holder.title.setText(events.get(position).getTitle());
+        } else {
+            holder.title.setText(events.get(position).getCategory() + ": " + events.get(position).getTitle());
+        }
+        holder.time.setText(events.get(position).getStart() + "");
+        holder.location.setText(events.get(position).getLocation());
+//        holder.category.setText("Category" + ": ");
+//        holder.title.setText("Title");
+//        holder.location.setText("Location");
+//        holder.time.setText("23:33-23:33");
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

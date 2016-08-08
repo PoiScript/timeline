@@ -1,5 +1,6 @@
 package com.poipoipo.timeline.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -23,6 +24,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_TITLE = "create table Title ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "category INTEGER, "
             + "value TEXT, "
             + "usage INTEGER)";
 
@@ -30,6 +32,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "value TEXT, "
             + "usage INTEGER)";
+
+    private static final String[] defaultCategory = {"Course", "Breakfast", "Lunch", "Dinner", "Brunch", "Cook"};
+    private static final String[] defaultCourseTitle = {"Further Mathematics", "Linear Algebra", "Discrete Mathematics", "Digital Signal Process", "Probability And Statistics"};
 
     Context mContext;
 
@@ -44,11 +49,27 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_CATEGORY);
         db.execSQL(CREATE_TITLE);
         db.execSQL(CREATE_LOCATION);
+        insertDefaultData(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    private void insertDefaultData(SQLiteDatabase database){
+        ContentValues values = new ContentValues();
+        for (String s : defaultCategory){
+            values.put("value", s);
+            database.insert(DatabaseHelper.TABLE_CATEGORY, null, values);
+            values.clear();
+        }
+        for (String s : defaultCourseTitle){
+            values.put("value", s);
+            values.put("category", 1);
+            database.insert(DatabaseHelper.TABLE_TITLE, null, values);
+            values.clear();
+        }
     }
 }
 

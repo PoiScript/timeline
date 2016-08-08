@@ -15,13 +15,13 @@ public class Event implements Serializable {
     public static final String NOTE = "note";
     public static final String STATE = "state";
 
-    private String title;
+    private String title = "(Title No Set)";
     private int start;
     private int end;
     private int state;
-    private String category;
-    private String location;
-    private String note;
+    private String category = "";
+    private String location = "";
+    private String note = "";
 
     public Event() {
     }

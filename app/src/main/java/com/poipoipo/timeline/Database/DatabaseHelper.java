@@ -131,7 +131,7 @@ public class DatabaseHelper {
     }
 
     public Map<Integer, String> query(String label) {
-        Map<Integer, String> map = new  HashMap<Integer, String>;
+        Map<Integer, String> map = new HashMap<>();
         cursor = database.query(label, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {

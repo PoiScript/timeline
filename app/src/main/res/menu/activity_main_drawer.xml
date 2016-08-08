@@ -10,26 +10,22 @@
             android:id="@+id/nav_dashboard"
             android:icon="@drawable/ic_dashboard"
             android:title="@string/drawer_dashboard" />
-    </group>
-
-    <item android:title="@string/drawer_labels">
-        <menu>
-            <item
-                android:id="@+id/nav_category"
-                android:icon="@drawable/ic_category"
-                android:title="@string/drawer_category" />
-            <item
-                android:id="@+id/nav_title"
-                android:icon="@drawable/ic_title"
-                android:title="@string/drawer_title" />
-            <item
-                android:id="@+id/nav_location"
-                android:icon="@drawable/ic_location"
-                android:title="@string/drawer_location" />
-        </menu>
-    </item>
-
-    <group android:checkableBehavior="single">
+        <item android:title="@string/drawer_labels">
+            <menu>
+                <item
+                    android:id="@+id/nav_category"
+                    android:icon="@drawable/ic_category"
+                    android:title="@string/drawer_category" />
+                <item
+                    android:id="@+id/nav_title"
+                    android:icon="@drawable/ic_title"
+                    android:title="@string/drawer_title" />
+                <item
+                    android:id="@+id/nav_location"
+                    android:icon="@drawable/ic_location"
+                    android:title="@string/drawer_location" />
+            </menu>
+        </item>
         <item
             android:id="@+id/nav_archive"
             android:icon="@drawable/ic_archive"
@@ -43,5 +39,4 @@
             android:icon="@drawable/ic_about"
             android:title="@string/drawer_about" />
     </group>
-
 </menu>

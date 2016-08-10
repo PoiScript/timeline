@@ -1,23 +1,23 @@
-package com.poipoipo.timeline.ui;
+package com.poipoipo.timeline.adapter;
 
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
+import com.poipoipo.timeline.ui.DialogFragmentDetail;
 
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.EventsViewHolder> {
+public class RecyclerViewAdapter
+        extends RecyclerView.Adapter<RecyclerViewAdapter.EventsViewHolder> {
     private List<Event> events;
     private Context context;
     private DialogFragmentDetail dialogFragment;
@@ -50,22 +50,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(final EventsViewHolder holder, int position) {
-        if (events.get(position).getCategory() == ""){
-            holder.title.setText(events.get(position).getTitle());
+        if (events.get(position).getTitle() == "") {
+            holder.title.setText(events.get(position).getSubtitle());
         } else {
-            holder.title.setText(events.get(position).getCategory() + ": " + events.get(position).getTitle());
+            holder.title.setText(events.get(position).getTitle() + ": " + events.get(position).getSubtitle());
         }
         holder.time.setText(events.get(position).getStart() + "");
         holder.location.setText(events.get(position).getLocation());
-//        holder.category.setText("Category" + ": ");
-//        holder.title.setText("Title");
-//        holder.location.setText("Location");
-//        holder.time.setText("23:33-23:33");
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FragmentManager manager = ((Activity) context).getFragmentManager();
-                dialogFragment = DialogFragmentDetail.newInstance(events.get(holder.getAdapterPosition()));
+                dialogFragment = DialogFragmentDetail.newInstance(events.get(holder.getAdapterPosition()).getStart());
                 dialogFragment.show(manager, "dialog");
             }
         });

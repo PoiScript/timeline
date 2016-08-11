@@ -1,8 +1,7 @@
 package com.poipoipo.timeline.adapter;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,19 +11,20 @@ import android.widget.TextView;
 
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
-import com.poipoipo.timeline.ui.DialogFragmentDetail;
+import com.poipoipo.timeline.ui.DetailActivity;
 
 import java.util.List;
 
-public class RecyclerViewAdapter
-        extends RecyclerView.Adapter<RecyclerViewAdapter.EventsViewHolder> {
+public class TimelineRecyclerAdapter
+        extends RecyclerView.Adapter<TimelineRecyclerAdapter.EventsViewHolder> {
     private List<Event> events;
     private Context context;
-    private DialogFragmentDetail dialogFragment;
+    private Intent intent;
 
-    public RecyclerViewAdapter(List<Event> events, Context context) {
+    public TimelineRecyclerAdapter(List<Event> events, Context context) {
         this.events = events;
         this.context = context;
+        intent = new Intent(context, DetailActivity.class);
     }
 
     static class EventsViewHolder extends RecyclerView.ViewHolder {
@@ -44,25 +44,25 @@ public class RecyclerViewAdapter
 
     @Override
     public EventsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.card_event, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_event, parent, false);
         return new EventsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final EventsViewHolder holder, int position) {
+        final Event event = events.get(holder.getAdapterPosition());
         if (events.get(position).getTitle() == "") {
-            holder.title.setText(events.get(position).getSubtitle());
+            holder.title.setText(event.getSubtitle());
         } else {
-            holder.title.setText(events.get(position).getTitle() + ": " + events.get(position).getSubtitle());
+            holder.title.setText(event.getTitle() + ": " + event.getSubtitle());
         }
-        holder.time.setText(events.get(position).getStart() + "");
-        holder.location.setText(events.get(position).getLocation());
+        holder.time.setText(event.getStart() + "");
+        holder.location.setText(event.getLocation());
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager manager = ((Activity) context).getFragmentManager();
-                dialogFragment = DialogFragmentDetail.newInstance(events.get(holder.getAdapterPosition()).getStart());
-                dialogFragment.show(manager, "dialog");
+                intent.putExtra(Event.EVENT, event);
+                context.startActivity(intent);
             }
         });
     }

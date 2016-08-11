@@ -22,14 +22,14 @@ public class FragmentLabels extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         textView = (TextView) view.findViewById(R.id.label_text);
         switch (type) {
-            case Label.CATEGORY:
-                textView.setText("CATEGORY");
+            case Label.TITLE:
+                textView.setText("SUBTITLE");
                 break;
             case Label.LOCATION:
                 textView.setText("LOCATION");
                 break;
-            case Label.TITLE:
-                textView.setText("TITLE");
+            case Label.SUBTITLE:
+                textView.setText("SUBTITLE");
         }
     }
 

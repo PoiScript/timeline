@@ -4,51 +4,40 @@ import java.io.Serializable;
 
 public class Event implements Serializable {
 
-    public static final int BOOKMARK = 0;
-    public static final int EVENT = 1;
-
-    public static final String CATEGORY = "category";
-    public static final String TITLE = "title";
+    public static final String EVENT = "event";
     public static final String START = "start";
-    public static final String END = "end";
-    public static final String LOCATION = "location";
-    public static final String NOTE = "note";
-    public static final String STATE = "state";
 
-    private String title = "(Title No Set)";
+    private String title;
+    private String subtitle;
     private int start;
     private int end;
-    private int state;
-    private String category = "";
-    private String location = "";
-    private String note = "";
+    private String location;
+    private String note;
+    private String teacher;
+    private String cost;
 
-    public Event() {
-    }
+    public boolean hasTitle = false;
+    public boolean hasEndTime = false;
+    public boolean hasLocation = false;
+    public boolean hasNote = false;
+    public boolean hasSubtitle = false;
+    public boolean hasTeacher = false;
+    public boolean hasCost = false;
 
     public Event(int start) {
         this.start = start;
-        state = BOOKMARK;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public void setEnd(int end) {
         this.end = end;
     }
 
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setLocation(String location) {
@@ -59,8 +48,8 @@ public class Event implements Serializable {
         this.note = note;
     }
 
-    public String getTitle() {
-        return title;
+    public String getSubtitle() {
+        return subtitle;
     }
 
     public int getStart() {
@@ -71,19 +60,15 @@ public class Event implements Serializable {
         return end;
     }
 
-    public int getState() {
-        return state;
+    public String getTitle() {
+        return title;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public String  getLocation() {
+    public String getLocation() {
         return location;
     }
 
-    public String  getNote() {
+    public String getNote() {
         return note;
     }
 }

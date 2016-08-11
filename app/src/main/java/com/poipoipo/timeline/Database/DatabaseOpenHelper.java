@@ -17,14 +17,14 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             + "location INTEGER, "
             + "note TEXT)";
 
-    public static final String CREATE_CATEGORY = "create table Category ("
+    public static final String CREATE_SUBTITLE = "create table Subtitle ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "title INTEGER, "
             + "value TEXT, "
             + "usage INTEGER)";
 
     public static final String CREATE_TITLE = "create table Title ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "category INTEGER, "
             + "value TEXT, "
             + "usage INTEGER)";
 
@@ -33,8 +33,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             + "value TEXT, "
             + "usage INTEGER)";
 
-    private static final String[] defaultCategory = {"Course", "Breakfast", "Lunch", "Dinner", "Brunch", "Cook"};
-    private static final String[] defaultCourseTitle = {"Further Mathematics", "Linear Algebra", "Discrete Mathematics", "Digital Signal Process", "Probability And Statistics"};
+    private static final String[] defaultTitle = {"Course", "Breakfast", "Lunch", "Dinner", "Brunch", "Cook"};
+    private static final String[] defaultCourseSubtitle = {"Further Mathematics", "Linear Algebra", "Discrete Mathematics", "Digital Signal Process", "Probability And Statistics"};
 
     Context mContext;
 
@@ -46,7 +46,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_EVENT);
-        db.execSQL(CREATE_CATEGORY);
+        db.execSQL(CREATE_SUBTITLE);
         db.execSQL(CREATE_TITLE);
         db.execSQL(CREATE_LOCATION);
         insertDefaultData(db);
@@ -59,15 +59,15 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     private void insertDefaultData(SQLiteDatabase database){
         ContentValues values = new ContentValues();
-        for (String s : defaultCategory){
+        for (String s : defaultTitle){
             values.put("value", s);
-            database.insert(DatabaseHelper.TABLE_CATEGORY, null, values);
+            database.insert(DatabaseHelper.TABLE_TITLE, null, values);
             values.clear();
         }
-        for (String s : defaultCourseTitle){
+        for (String s : defaultCourseSubtitle){
             values.put("value", s);
-            values.put("category", 1);
-            database.insert(DatabaseHelper.TABLE_TITLE, null, values);
+            values.put("title", 1);
+            database.insert(DatabaseHelper.TABLE_SUBTITLE, null, values);
             values.clear();
         }
     }

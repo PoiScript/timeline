@@ -1,7 +1,6 @@
 package com.poipoipo.timeline.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,18 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.data.Label;
-import com.poipoipo.timeline.ui.EditActivity;
 
 import java.util.List;
 
-public class DetailRecyclerAdapter
-        extends RecyclerView.Adapter<DetailRecyclerAdapter.LabelsViewHolder> {
-    private List<Label> labels;
+public class SelectLabelAdapter
+        extends RecyclerView.Adapter<SelectLabelAdapter.LabelsViewHolder> {
+    private List<String> strings;
     private Context context;
 
-    public DetailRecyclerAdapter(List<Label> labels, Context context){
-        this.labels = labels;
+    public SelectLabelAdapter(List<String> strings, Context context){
+        this.strings = strings;
         this.context = context;
     }
 
@@ -38,18 +35,19 @@ public class DetailRecyclerAdapter
 
     @Override
     public LabelsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_label, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_label_show, parent, false);
         LabelsViewHolder holder = new LabelsViewHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(LabelsViewHolder holder, int position) {
-        holder.textView.setText("Test");
+        String s = strings.get(holder.getAdapterPosition());
+        holder.textView.setText(s);
     }
 
     @Override
     public int getItemCount() {
-        return labels.size();
+        return strings.size();
     }
 }

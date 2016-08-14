@@ -13,15 +13,17 @@ import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.ui.DetailActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class TimelineRecyclerAdapter
-        extends RecyclerView.Adapter<TimelineRecyclerAdapter.EventsViewHolder> {
+public class EventCardAdapter
+        extends RecyclerView.Adapter<EventCardAdapter.EventsViewHolder> {
+    private SimpleDateFormat format = new SimpleDateFormat("HH:mm");
     private List<Event> events;
     private Context context;
     private Intent intent;
 
-    public TimelineRecyclerAdapter(List<Event> events, Context context) {
+    public EventCardAdapter(List<Event> events, Context context) {
         this.events = events;
         this.context = context;
         intent = new Intent(context, DetailActivity.class);
@@ -44,19 +46,27 @@ public class TimelineRecyclerAdapter
 
     @Override
     public EventsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_event, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_event_card, parent, false);
         return new EventsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final EventsViewHolder holder, int position) {
         final Event event = events.get(holder.getAdapterPosition());
-        if (events.get(position).getTitle() == "") {
+        if (event.hasTitle && event.hasSubtitle) {
+            holder.title.setText(event.getTitle() + ": " + event.getSubtitle());
+        } else if (event.hasTitle) {
+            holder.title.setText(event.getTitle());
+        } else if (event.hasSubtitle) {
             holder.title.setText(event.getSubtitle());
         } else {
-            holder.title.setText(event.getTitle() + ": " + event.getSubtitle());
+            holder.title.setText(R.string.dialog_no_title);
         }
-        holder.time.setText(event.getStart() + "");
+        if (event.hasEndTime) {
+            holder.time.setText(format.format(event.getStart() * 1000L) + " - " + format.format(event.getEnd() * 1000L));
+        } else {
+            holder.time.setText(format.format(event.getStart() * 1000L));
+        }
         holder.location.setText(event.getLocation());
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -10,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
 
-    public static final int MESSAGE_DRAWER = 0, MESSAGE_DIALOG_CREATE = 1, MESSAGE_QUICK_CREATE = 2, MESSAGE_DIALOG_DETAIL = 3;
+    public static final int MESSAGE_DRAWER = 0, MESSAGE_CREATE = 1, MESSAGE_QUICK_CREATE = 2, MESSAGE_DIALOG_DETAIL = 3;
     private Intent intent;
     private DrawerLayout drawerLayout;
     public DatabaseHelper databaseHelper;
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.timeline_toolbar);
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -97,17 +100,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void showDialog(Event event) {
-        intent.putExtra("Event", event);
-        startActivity(intent);
-    }
-
     public int getTodayTimestamp() {
         return timestampUtil.getTodayTimestamp();
     }
 
-    public void doPositiveClick() {
-        Log.d("DEBUGGING", "User clicks on OK");
+    public int getCurrentTimestamp(){
+        return timestampUtil.getCurrentTimestamp();
     }
 
     public final Handler handler = new Handler() {
@@ -117,8 +115,7 @@ public class MainActivity extends AppCompatActivity
                 case MESSAGE_DRAWER:
                     drawerLayout.openDrawer(GravityCompat.START);
                     break;
-                case MESSAGE_DIALOG_CREATE:
-                    showDialog(new Event(timestampUtil.getCurrentTimestamp()));
+                case MESSAGE_CREATE:
                     break;
                 case MESSAGE_QUICK_CREATE:
                     databaseHelper.insert(new Event(timestampUtil.getCurrentTimestamp()));

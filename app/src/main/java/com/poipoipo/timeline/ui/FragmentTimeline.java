@@ -1,7 +1,7 @@
 package com.poipoipo.timeline.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 
 import android.support.design.widget.FloatingActionButton;
@@ -15,100 +15,80 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.adapter.TimelineRecyclerAdapter;
+import com.poipoipo.timeline.adapter.EventCardAdapter;
 import com.poipoipo.timeline.data.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class FragmentTimeline extends Fragment
         implements View.OnClickListener, View.OnLongClickListener, Toolbar.OnMenuItemClickListener {
-
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("M d");
-
-    FloatingActionButton fab;
-    Toolbar toolbar;
-    Button button;
-    int timestamp;
+    private SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
+    private MainActivity mainActivity;
     List<Event> events = new ArrayList<>();
-    Handler handler;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        timestamp = ((MainActivity) getActivity()).getTodayTimestamp();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp * 1000L);
-        toolbar = (Toolbar) view.findViewById(R.id.timeline_toolbar);
+        mainActivity = (MainActivity) getActivity();
+        int todayTimestamp = mainActivity.getTodayTimestamp();
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.timeline_toolbar);
         toolbar.inflateMenu(R.menu.menu_timeline);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
-        handler = ((MainActivity) getActivity()).handler;
         toolbar.setNavigationOnClickListener(this);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setTitle(dateFormat.format(calendar.getTime()));
+        toolbar.setTitle(null);
+        Button editDate = (Button) view.findViewById(R.id.edit_date);
+        editDate.setOnClickListener(this);
+        editDate.setText(format.format(mainActivity.getTodayTimestamp() * 1000L));
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mainActivity);
         recyclerView.setLayoutManager(layoutManager);
-        TimelineRecyclerAdapter adapter = new TimelineRecyclerAdapter(initData(), getContext());
+        EventCardAdapter adapter = new EventCardAdapter(mainActivity.databaseHelper.query(todayTimestamp, todayTimestamp + 24 * 60 * 60), mainActivity);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnClickListener(this);
-        fab.setOnLongClickListener(this);
-        button = (Button) toolbar.findViewById(R.id.edit_date);
-        button.setOnClickListener(this);
-    }
-
-    public List<Event> initData() {
-        List<Event> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            list.add(new Event(233));
-            list.add(new Event(233));
-            list.add(new Event(233));
-            list.add(new Event(233));
-        }
-        return list;
+//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+//        fab.setOnClickListener(this);
+//        fab.setOnLongClickListener(this);
+//        Button button = (Button) toolbar.findViewById(R.id.edit_date);
+//        button.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.edit_date:
                 Log.d("TEST", "TEST");
                 break;
             case R.id.fab:
-                handler.obtainMessage(MainActivity.MESSAGE_DIALOG_CREATE).sendToTarget();
+                Intent intent = new Intent(mainActivity, EditActivity.class);
+                intent.putExtra(Event.EVENT, new Event((mainActivity.getCurrentTimestamp())));
+                startActivity(intent);
                 break;
             default:
-                handler.obtainMessage(MainActivity.MESSAGE_DRAWER).sendToTarget();
         }
     }
 
     @Override
     public boolean onLongClick(View view) {
-        handler.obtainMessage(MainActivity.MESSAGE_QUICK_CREATE).sendToTarget();
+        mainActivity.databaseHelper.insert(new Event(mainActivity.getCurrentTimestamp()));
+        Toast.makeText(mainActivity, "Event Created", Toast.LENGTH_SHORT).show();
         return true;
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_date:
-                Log.d("TEST", "TEST");
-        }
+        Log.d("TEST", "TEST");
         return false;
-    }
-
-    public void refresh() {
-
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_timeline, null);
+        return inflater.inflate(R.layout.fragment_timeline, container, false);
     }
 }

@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 public class DatabaseHelper {
-
     public static final String DATABASE_NAME = "Event.db";
     public static final String TABLE_EVENT = "Event";
     public static final String TABLE_SUBTITLE = "Subtitle";
@@ -26,9 +26,9 @@ public class DatabaseHelper {
     ContentValues values = new ContentValues();
     Cursor cursor;
     List<Event> events = new ArrayList<>();
-    Map<Integer, String> subtitles;
-    Map<Integer, String> titles;
-    Map<Integer, String> locations;
+    public Map<Integer, String> subtitles;
+    public Map<Integer, String> titles;
+    public Map<Integer, String> locations;
 
     public DatabaseHelper(Context context) {
         database = new DatabaseOpenHelper(context, DATABASE_NAME, null, VERSION).getWritableDatabase();
@@ -160,5 +160,10 @@ public class DatabaseHelper {
         cursor.close();
         return map;
     }
+
+//    private Map<Integer, Map<Integer, Label>> test(){
+//        Map<Integer, Map<Integer, Label>> map = new HashMap<>();
+//
+//    }
 
 }

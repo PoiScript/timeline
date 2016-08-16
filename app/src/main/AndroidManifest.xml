@@ -20,7 +20,7 @@
         </activity>
         <activity
             android:name=".ui.EditActivity"
-            android:label="@string/title_activity_edit"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.SearchActivity"

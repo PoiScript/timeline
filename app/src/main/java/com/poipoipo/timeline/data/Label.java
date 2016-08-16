@@ -1,6 +1,7 @@
 package com.poipoipo.timeline.data;
 
 public class Label {
+    public static final String TYPE = "type";
     public static final int TITLE = 0;
     public static final int SUBTITLE = 1;
     public static final int LOCATION = 2;
@@ -14,11 +15,17 @@ public class Label {
     private String value;
     private int type;
 
-    public Label() {
+    public Label(int type, String value) {
+        this.type = type;
+        this.value = value;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getType() {
+        return type;
     }
 
     public void setValue(String value) {

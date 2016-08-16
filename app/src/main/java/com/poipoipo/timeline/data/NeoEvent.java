@@ -21,4 +21,16 @@ public class NeoEvent {
     public Map<Integer, Integer> getLabels() {
         return labels;
     }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public void setEnd(int end) {
+        this.end = end;
+    }
+
+    public void setLabels(Map<Integer, Integer> labels) {
+        this.labels = labels;
+    }
 }

@@ -1,5 +1,7 @@
 package com.poipoipo.timeline.ui;
 
+import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,12 +19,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.poipoipo.timeline.DatePickerFragment;
 import com.poipoipo.timeline.R;
+import com.poipoipo.timeline.TimePickerFragment;
 import com.poipoipo.timeline.adapter.EventCardAdapter;
 import com.poipoipo.timeline.data.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,6 +36,9 @@ public class FragmentTimeline extends Fragment
     private SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private MainActivity mainActivity;
     List<Event> events = new ArrayList<>();
+    private Calendar calendar;
+    private DialogFragment dialogFragment;
+    Context context;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -56,13 +64,15 @@ public class FragmentTimeline extends Fragment
 //        fab.setOnLongClickListener(this);
 //        Button button = (Button) toolbar.findViewById(R.id.edit_date);
 //        button.setOnClickListener(this);
+//        dialogFragment = TimePickerFragment.newInstance(Calendar.getInstance());
+        dialogFragment = DatePickerFragment.newInstance(Calendar.getInstance());
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.edit_date:
-                Log.d("TEST", "TEST");
+                dialogFragment.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:
                 Intent intent = new Intent(mainActivity, EditActivity.class);

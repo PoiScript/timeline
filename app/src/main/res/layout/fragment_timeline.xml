@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -16,13 +17,12 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways">
-
             <Button
-                android:id="@+id/edit_date"
+                android:id="@+id/toolbar_date"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="start|center_vertical" />
+                android:textAllCaps="false" />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
@@ -39,7 +39,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:fitsSystemWindows="true"
         android:src="@drawable/ic_add" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.poipoipo.timeline.DatePickerFragment;
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.TimePickerFragment;
 import com.poipoipo.timeline.adapter.EventCardAdapter;
 import com.poipoipo.timeline.data.Event;
 
@@ -38,7 +37,6 @@ public class FragmentTimeline extends Fragment
     List<Event> events = new ArrayList<>();
     private Calendar calendar;
     private DialogFragment dialogFragment;
-    Context context;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -49,8 +47,7 @@ public class FragmentTimeline extends Fragment
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener(this);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setTitle(null);
-        Button editDate = (Button) view.findViewById(R.id.edit_date);
+        Button editDate = (Button) view.findViewById(R.id.toolbar_date);
         editDate.setOnClickListener(this);
         editDate.setText(format.format(mainActivity.getTodayTimestamp() * 1000L));
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -59,19 +56,18 @@ public class FragmentTimeline extends Fragment
         EventCardAdapter adapter = new EventCardAdapter(mainActivity.databaseHelper.query(todayTimestamp, todayTimestamp + 24 * 60 * 60), mainActivity);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-//        fab.setOnClickListener(this);
-//        fab.setOnLongClickListener(this);
-//        Button button = (Button) toolbar.findViewById(R.id.edit_date);
-//        button.setOnClickListener(this);
-//        dialogFragment = TimePickerFragment.newInstance(Calendar.getInstance());
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+        fab.setOnLongClickListener(this);
+        Button button = (Button) toolbar.findViewById(R.id.toolbar_date);
+        button.setOnClickListener(this);
         dialogFragment = DatePickerFragment.newInstance(Calendar.getInstance());
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.edit_date:
+            case R.id.toolbar_date:
                 dialogFragment.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:

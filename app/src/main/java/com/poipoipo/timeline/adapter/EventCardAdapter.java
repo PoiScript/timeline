@@ -1,5 +1,6 @@
 package com.poipoipo.timeline.adapter;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -9,16 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.poipoipo.timeline.EventEditorFragment;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.ui.DetailActivity;
+import com.poipoipo.timeline.ui.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class EventCardAdapter
         extends RecyclerView.Adapter<EventCardAdapter.EventsViewHolder> {
-    private SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private List<Event> events;
     private Context context;
     private Intent intent;
@@ -71,8 +75,10 @@ public class EventCardAdapter
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intent.putExtra(Event.EVENT, event);
-                context.startActivity(intent);
+//                intent.putExtra(Event.EVENT, event);
+//                context.startActivity(intent);
+                DialogFragment fragment = EventEditorFragment.newInstance(event);
+                fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
             }
         });
     }

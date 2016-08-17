@@ -14,10 +14,18 @@ public class Label {
     private int id;
     private String value;
     private int type;
+    private int usage;
 
     public Label(int type, String value) {
         this.type = type;
         this.value = value;
+    }
+
+    public Label(int id, String value, int usage) {
+        this.id = id;
+        this.value = value;
+        this.type = type;
+        this.usage = usage;
     }
 
     public void setId(int id) {

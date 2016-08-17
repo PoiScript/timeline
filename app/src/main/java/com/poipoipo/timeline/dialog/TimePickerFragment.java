@@ -1,4 +1,4 @@
-package com.poipoipo.timeline;
+package com.poipoipo.timeline.dialog;
 
 import android.app.Dialog;
 import android.app.DialogFragment;

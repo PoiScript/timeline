@@ -48,6 +48,27 @@
         <item>Always</item>
         <item>When possible</item>
         <item>Never</item>
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
     </string-array>
     <string-array name="pref_example_list_values">
         <item>1</item>

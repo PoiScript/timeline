@@ -1,5 +1,6 @@
 package com.poipoipo.timeline.ui;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,12 +11,12 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
+import com.poipoipo.timeline.dialog.EventEditorFragment;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.data.Label;
@@ -23,7 +24,7 @@ import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.database.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, EventEditorFragment.EventEditorListener {
     private static final String TAG = "MainActivity";
 
     public static final int MESSAGE_DRAWER = 0, MESSAGE_CREATE = 1, MESSAGE_QUICK_CREATE = 2, MESSAGE_DIALOG_DETAIL = 3;
@@ -52,8 +53,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.timeline_toolbar);
-        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity
         return timestampUtil.getTodayTimestamp();
     }
 
-    public int getCurrentTimestamp(){
+    public int getCurrentTimestamp() {
         return timestampUtil.getCurrentTimestamp();
     }
 
@@ -125,4 +124,15 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    @Override
+    public void onNegativeClick(DialogFragment fragment) {
+        Event event = (Event) fragment.getArguments().getSerializable("event");
+        Toast.makeText(getApplicationContext(), "Negation Clicker" + event.getStart(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPositiveClick(DialogFragment fragment) {
+        Event event = (Event) fragment.getArguments().getSerializable("event");
+        Toast.makeText(getApplicationContext(), "Positive Click" + event.getStart(), Toast.LENGTH_SHORT).show();
+    }
 }

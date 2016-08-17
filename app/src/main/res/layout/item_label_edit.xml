@@ -9,9 +9,8 @@
         android:layout_height="65dp"
         android:padding="@dimen/edit_icon_padding" />
 
-    <Button
-         android:id="@+id/edit_label_button"
-        style="@style/Widget.AppCompat.Button.Borderless"
+    <Spinner
+        android:id="@+id/edit_label_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="start|center_vertical"

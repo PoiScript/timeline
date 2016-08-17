@@ -9,19 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.poipoipo.timeline.dialog.EventEditorFragment;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.ui.DetailActivity;
+import com.poipoipo.timeline.ui.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class EventCardAdapter
         extends RecyclerView.Adapter<EventCardAdapter.EventsViewHolder> {
-    private SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private List<Event> events;
     private Context context;
     private Intent intent;
+    private EventEditorFragment fragment;
 
     public EventCardAdapter(List<Event> events, Context context) {
         this.events = events;
@@ -46,6 +50,7 @@ public class EventCardAdapter
 
     @Override
     public EventsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        fragment = new EventEditorFragment();
         View view = LayoutInflater.from(context).inflate(R.layout.item_event_card, parent, false);
         return new EventsViewHolder(view);
     }
@@ -71,8 +76,11 @@ public class EventCardAdapter
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intent.putExtra(Event.EVENT, event);
-                context.startActivity(intent);
+//                intent.putExtra(Event.EVENT, event);
+//                context.startActivity(intent);
+//                DialogFragment fragment = EventEditorFragment.newInstance(event);
+                fragment.update(event);
+                fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
             }
         });
     }

@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class Event implements Serializable {
-    private SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d, yyyy      HH:mm");
+    private SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d, yyyy      HH:mm", Locale.getDefault());
     private static final String NO_LOCATION = "Add Location";
     private static final String NO_COST = "Set Cost";
     private static final String NO_END = "Set Ending Time";
@@ -30,6 +32,16 @@ public class Event implements Serializable {
     public boolean hasSubtitle = false;
     public boolean hasTeacher = false;
     public boolean hasCost = false;
+
+    private Map<Integer, Integer> labels;
+
+    public Map<Integer, Integer> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<Integer, Integer> labels) {
+        this.labels = labels;
+    }
 
     public Event(int start) {
         this.start = start;

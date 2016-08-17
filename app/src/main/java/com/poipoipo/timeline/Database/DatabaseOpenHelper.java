@@ -1,6 +1,5 @@
 package com.poipoipo.timeline.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -9,32 +8,25 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_EVENT = "create table Event ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "category INTEGER, "
-            + "title INTEGER, "
-            + "state INTEGER, "
             + "start INTEGER, "
-            + "end INTEGER, "
-            + "location INTEGER, "
-            + "note TEXT)";
+            + "end INTEGER)";
 
-    public static final String CREATE_SUBTITLE = "create table Subtitle ("
+    public static final String CREATE_ALL_LABEL = "create table AllLabel ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "title INTEGER, "
+            + "label TEXT)";
+
+    public static final String CREATE_NEW_LABEL_PART_1 = "create table ";
+    public static final String CREATE_NEW_LABEL_PART_2 = " ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "parent INTEGER, "
             + "value TEXT, "
             + "usage INTEGER)";
-
-    public static final String CREATE_TITLE = "create table Title ("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "value TEXT, "
-            + "usage INTEGER)";
-
-    public static final String CREATE_LOCATION = "create table Location ("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "value TEXT, "
-            + "usage INTEGER)";
+    public static final String EVENT_ADD_COLUMN_PART_1 = "alter table Event add column ";
+    public static final String EVENT_ADD_COLUMN_PART_2 = " integer";
 
     private static final String[] defaultTitle = {"Course", "Breakfast", "Lunch", "Dinner", "Brunch", "Cook"};
     private static final String[] defaultCourseSubtitle = {"Further Mathematics", "Linear Algebra", "Discrete Mathematics", "Digital Signal Process", "Probability And Statistics"};
+    private static final String[] defaultLabels = {"Title", "Subtitle", "Location"};
 
     Context mContext;
 
@@ -46,29 +38,25 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_EVENT);
-        db.execSQL(CREATE_SUBTITLE);
-        db.execSQL(CREATE_TITLE);
-        db.execSQL(CREATE_LOCATION);
+        db.execSQL(CREATE_ALL_LABEL);
+        for (String label : defaultLabels) {
+            db.execSQL(CREATE_NEW_LABEL_PART_1 + label + CREATE_NEW_LABEL_PART_2);
+            db.execSQL(EVENT_ADD_COLUMN_PART_1 + label + EVENT_ADD_COLUMN_PART_2);
+            db.execSQL("insert into AllLabel (label) values(?)", new String[]{label});
+        }
         insertDefaultData(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
 
-    private void insertDefaultData(SQLiteDatabase database){
-        ContentValues values = new ContentValues();
-        for (String s : defaultTitle){
-            values.put("value", s);
-            database.insert(DatabaseHelper.TABLE_TITLE, null, values);
-            values.clear();
+    private void insertDefaultData(SQLiteDatabase database) {
+        for (String title : defaultTitle) {
+            database.execSQL("insert into Title (value) values(?)", new String[]{title});
         }
-        for (String s : defaultCourseSubtitle){
-            values.put("value", s);
-            values.put("title", 1);
-            database.insert(DatabaseHelper.TABLE_SUBTITLE, null, values);
-            values.clear();
+        for (String subtitle : defaultCourseSubtitle) {
+            database.execSQL("insert into Subtitle (label) values(?)", new String[]{subtitle});
         }
     }
 }

@@ -27,8 +27,14 @@
             android:gravity="start|center_vertical"
             android:textAllCaps="false" />
 
-    </android.support.design.widget.AppBarLayout>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabGravity="fill"
+            app:tabMode="fixed" />
 
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_edit"

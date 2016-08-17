@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.data.Label;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.zip.Inflater;
 
 public class DatabaseHelper {
+    private static final String TAG = "DatabaseHelper";
     public static final String DATABASE_NAME = "Event.db";
     public static final String TABLE_EVENT = "Event";
     public static final String TABLE_SUBTITLE = "Subtitle";
@@ -26,6 +28,7 @@ public class DatabaseHelper {
     ContentValues values = new ContentValues();
     Cursor cursor;
     List<Event> events = new ArrayList<>();
+    public Map<Integer, Map<Integer, Label>> allLabel;
     public Map<Integer, String> subtitles;
     public Map<Integer, String> titles;
     public Map<Integer, String> locations;
@@ -35,15 +38,42 @@ public class DatabaseHelper {
         subtitles = query(TABLE_SUBTITLE);
         titles = query(TABLE_TITLE);
         locations = query(TABLE_LOCATION);
+        setAllLabel();
+        Log.d(TAG, "DatabaseHelper: database ready");
+    }
+
+    private Map<Integer, Map<Integer, Label>> setAllLabel() {
+        Map<Integer, Map<Integer, Label>> map = new HashMap<>();
+        cursor = database.query("AllLabel", null, null, null, null, null, null);
+        if (cursor.moveToFirst()){
+            do {
+               map.put(cursor.getInt(cursor.getColumnIndex("id")),
+                       getLabelMapByName(cursor.getString(cursor.getColumnIndex("label"))));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return map;
+    }
+
+    private Map<Integer, Label> getLabelMapByName(String tableName) {
+        Map<Integer, Label> map = new HashMap<>();
+        Cursor cursor = database.query(tableName, null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                map.put(cursor.getInt(cursor.getColumnIndex("id")), new Label(cursor.getInt(cursor.getColumnIndex("id")),
+                        cursor.getString(cursor.getColumnIndex("value")),
+                        cursor.getInt(cursor.getColumnIndex("usage"))));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return map;
     }
 
     public void insert(Event event) {
         values.clear();
-        values.put("category", event.getTitle());
         values.put("title", event.getSubtitle());
         values.put("start", event.getStart());
         values.put("location", event.getLocation());
-        values.put("note", event.getNote());
         if (event.hasEndTime) {
             values.put("end", event.getEnd());
         }
@@ -102,12 +132,6 @@ public class DatabaseHelper {
         return event;
     }
 
-//    public List<Event> query() {
-//        cursor = database.query(TABLE_EVENT, null, null, null, null, null, null);
-//        queryTraverse();
-//        return events;
-//    }
-
     public List<Event> query(int dataMin, int dataMax) {
         String where = "start < ? and start > ?";
         String[] whereValues = {Integer.toString(dataMax), Integer.toString(dataMin)};
@@ -116,33 +140,11 @@ public class DatabaseHelper {
         return events;
     }
 
-    public String getLabelById(int type, int id) {
-        String s = null;
-        switch (type) {
-            case Label.TITLE:
-                s = titles.get(id);
-                break;
-            case Label.SUBTITLE:
-                s = subtitles.get(id);
-                break;
-            case Label.LOCATION:
-                s = locations.get(id);
-                break;
-        }
-        return s;
-    }
-
     private void queryTraverse() {
         events.clear();
         if (cursor.moveToFirst()) {
             do {
                 Event event = new Event(cursor.getInt(cursor.getColumnIndex("start")));
-                event.setTitle(subtitles.get(cursor.getInt(cursor.getColumnIndex("category"))));
-                event.setSubtitle(titles.get(cursor.getInt(cursor.getColumnIndex("title"))));
-                if (event.hasEndTime) {
-                    event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
-                }
-                event.setLocation(locations.get(cursor.getInt(cursor.getColumnIndex("location"))));
                 events.add(event);
             } while (cursor.moveToNext());
         }
@@ -161,9 +163,11 @@ public class DatabaseHelper {
         return map;
     }
 
-//    private Map<Integer, Map<Integer, Label>> test(){
-//        Map<Integer, Map<Integer, Label>> map = new HashMap<>();
-//
-//    }
-
+    public List<Label> parseLabel(Map<Integer, Integer> labelMap) {
+        List<Label> labels = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : labelMap.entrySet()) {
+//            labels.add(new Label());
+        }
+        return labels;
+    }
 }

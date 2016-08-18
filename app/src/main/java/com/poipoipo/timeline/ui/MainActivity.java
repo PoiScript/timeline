@@ -1,13 +1,12 @@
 package com.poipoipo.timeline.ui;
 
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,19 +15,18 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
-import com.poipoipo.timeline.dialog.EventEditorFragment;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.data.Label;
 import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.database.DatabaseHelper;
+import com.poipoipo.timeline.dialog.EventEditorFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventEditorFragment.EventEditorListener {
     private static final String TAG = "MainActivity";
 
     public static final int MESSAGE_DRAWER = 0, MESSAGE_CREATE = 1, MESSAGE_QUICK_CREATE = 2, MESSAGE_DIALOG_DETAIL = 3;
-    private Intent intent;
     private DrawerLayout drawerLayout;
     public DatabaseHelper databaseHelper;
     private TimestampUtil timestampUtil = new TimestampUtil();
@@ -44,7 +42,6 @@ public class MainActivity extends AppCompatActivity
         /*Stetho Debug*/
         Stetho.initializeWithDefaults(this);
         Log.d(TAG, "onCreate: Stetho Running");
-        intent = new Intent(this, DetailActivity.class);
         fragment = new FragmentTimeline();
         manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.content_frame, fragment).commit();

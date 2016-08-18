@@ -1,10 +1,8 @@
 package com.poipoipo.timeline.ui;
 
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,10 +16,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.poipoipo.timeline.dialog.DatePickerFragment;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventCardAdapter;
 import com.poipoipo.timeline.data.Event;
+import com.poipoipo.timeline.dialog.DatePickerFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,9 +68,6 @@ public class FragmentTimeline extends Fragment
                 dialogFragment.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:
-                Intent intent = new Intent(mainActivity, EditActivity.class);
-                intent.putExtra(Event.EVENT, new Event((mainActivity.getCurrentTimestamp())));
-                startActivity(intent);
                 break;
             default:
         }

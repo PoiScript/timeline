@@ -19,16 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.EditActivity"
-            android:label=""
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".ui.SearchActivity"
             android:label="@string/title_activity_search"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ui.DetailActivity"
-            android:theme="@style/AppTheme.Light.Dialog" />
     </application>
 
 </manifest>

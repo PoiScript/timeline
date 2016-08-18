@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 public class DatabaseHelper {
     private static final String TAG = "DatabaseHelper";
@@ -45,10 +44,10 @@ public class DatabaseHelper {
     private Map<Integer, Map<Integer, Label>> setAllLabel() {
         Map<Integer, Map<Integer, Label>> map = new HashMap<>();
         cursor = database.query("AllLabel", null, null, null, null, null, null);
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             do {
-               map.put(cursor.getInt(cursor.getColumnIndex("id")),
-                       getLabelMapByName(cursor.getString(cursor.getColumnIndex("label"))));
+                map.put(cursor.getInt(cursor.getColumnIndex("id")),
+                        getLabelMapByName(cursor.getString(cursor.getColumnIndex("label"))));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -161,6 +160,10 @@ public class DatabaseHelper {
         }
         cursor.close();
         return map;
+    }
+
+    private void traverseLabel() {
+
     }
 
     public List<Label> parseLabel(Map<Integer, Integer> labelMap) {

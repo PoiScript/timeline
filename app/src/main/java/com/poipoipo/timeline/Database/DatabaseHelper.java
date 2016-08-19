@@ -129,6 +129,9 @@ public class DatabaseHelper {
             case 2:
                 icon = R.drawable.ic_search;
                 break;
+            case 3:
+                icon = R.drawable.ic_location;
+                break;
             case 999:
                 icon = R.drawable.ic_touch_app_black_24dp;
         }

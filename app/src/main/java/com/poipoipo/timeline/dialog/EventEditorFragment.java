@@ -17,11 +17,11 @@ import android.widget.Toast;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventEditorAdapter;
 import com.poipoipo.timeline.data.Event;
-import com.poipoipo.timeline.data.Label;
 import com.poipoipo.timeline.data.MyEntry;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +30,9 @@ import java.util.Map;
 public class EventEditorFragment extends DialogFragment
         implements Toolbar.OnMenuItemClickListener,
         View.OnClickListener,
-        EventEditorAdapter.OnItemChangedListener {
+        EventEditorAdapter.OnItemChangedListener,
+        TimePickerFragment.OnTimeSetListener,
+        DatePickerFragment.OnDateSetListener {
     private static final String TAG = "EventEditorFragment";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy     HH:mm", Locale.getDefault());
     View view;
@@ -41,6 +43,8 @@ public class EventEditorFragment extends DialogFragment
     private EventEditorListener mListener;
     private EventEditorAdapter adapter;
     private RecyclerView recyclerView;
+    private Calendar startCalendar = Calendar.getInstance();
+    private Calendar endCalendar = Calendar.getInstance();
     private Button start;
     private Button end;
 
@@ -69,6 +73,8 @@ public class EventEditorFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         event = (Event) getArguments().getSerializable("event");
+        startCalendar.setTimeInMillis(event.getStart() * 1000L);
+        endCalendar.setTimeInMillis(event.getEnd() * 1000L);
         try {
             labelList = event.getLabelList();
         } catch (NullPointerException e) {
@@ -97,19 +103,59 @@ public class EventEditorFragment extends DialogFragment
 
     @Override
     public void onClick(View view) {
-        DialogFragment fragment = new TimePickerFragment();
-        fragment.show(getFragmentManager(), "timePicker");
+        switch (view.getId()) {
+            case R.id.event_editor_start:
+                DialogFragment fragment = TimePickerFragment.newInstance(Calendar.getInstance(), 1);
+                fragment.setTargetFragment(this, 0);
+                fragment.show(getFragmentManager(), "timePicker");
+                break;
+            case R.id.event_editor_end:
+                DialogFragment fragment1 = TimePickerFragment.newInstance(Calendar.getInstance(), 2);
+                fragment1.setTargetFragment(this, 0);
+                fragment1.show(getFragmentManager(), "timePicker");
+                break;
+        }
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                labelList.add(new MyEntry<>(Label.INSERT, 0));
+                labelList.add(new MyEntry<>(1, 0));
                 adapter.notifyItemInserted(labelList.size());
-                changeLog.put(Label.INSERT, 0);
+                changeLog.put(1, 0);
         }
         return false;
+    }
+
+    @Override
+    public void onTimeSet(int type, int hour, int minute) {
+        switch (type) {
+            case Event.TYPE_START:
+                startCalendar.set(Calendar.HOUR, hour);
+                startCalendar.set(Calendar.MINUTE, minute);
+                break;
+            case Event.TYPE_END:
+                endCalendar.set(Calendar.HOUR, hour);
+                endCalendar.set(Calendar.MINUTE, minute);
+        }
+        Toast.makeText(getActivity(), "type = " + type + " hour = " + hour + " minute = " + minute, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDateSet(int type, int year, int month, int day) {
+        switch (type) {
+            case Event.TYPE_START:
+                startCalendar.set(Calendar.YEAR, year);
+                startCalendar.set(Calendar.MONTH, month);
+                startCalendar.set(Calendar.DAY_OF_MONTH, day);
+                break;
+            case Event.TYPE_END:
+                endCalendar.set(Calendar.YEAR, year);
+                endCalendar.set(Calendar.MONTH, month);
+                endCalendar.set(Calendar.DAY_OF_MONTH, day);
+        }
+        Toast.makeText(getActivity(), "type = " + type + " year = " + year + " month = " + month + " day = " + day, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -134,6 +180,7 @@ public class EventEditorFragment extends DialogFragment
 
     @Override
     public void onItemChange(int key, int value) {
+        changeLog.put(key, value);
         Toast.makeText(getActivity(), "Test", Toast.LENGTH_SHORT).show();
     }
 

@@ -1,11 +1,11 @@
 package com.poipoipo.timeline.ui;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.data.Label;
 import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.database.DatabaseHelper;
 import com.poipoipo.timeline.dialog.EventEditorFragment;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity
         Stetho.initializeWithDefaults(this);
         Log.d(TAG, "onCreate: Stetho Running");
         fragment = new FragmentTimeline();
-        manager = getSupportFragmentManager();
+        manager = getFragmentManager();
         manager.beginTransaction().replace(R.id.content_frame, fragment).commit();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -82,24 +81,6 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.nav_timeline:
                 fragment = new FragmentTimeline();
-                break;
-            case R.id.nav_dashboard:
-                fragment = new FragmentDashboard();
-                break;
-            case R.id.nav_category:
-                fragment = new FragmentLabels();
-                args.putInt(FragmentLabels.LABEL_TYPE, Label.TITLE);
-                fragment.setArguments(args);
-                break;
-            case R.id.nav_title:
-                fragment = new FragmentLabels();
-                args.putInt(FragmentLabels.LABEL_TYPE, Label.LOCATION);
-                fragment.setArguments(args);
-                break;
-            case R.id.nav_location:
-                fragment = new FragmentLabels();
-                args.putInt(FragmentLabels.LABEL_TYPE, Label.SUBTITLE);
-                fragment.setArguments(args);
                 break;
         }
         manager.beginTransaction().add(R.id.content_frame, fragment).commit();

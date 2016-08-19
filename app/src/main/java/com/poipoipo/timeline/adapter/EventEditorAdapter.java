@@ -2,7 +2,6 @@ package com.poipoipo.timeline.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,14 +26,14 @@ public class EventEditorAdapter
     private static final String TAG = "EventEditorAdapter";
     private List<Map.Entry<Integer, Integer>> labelList = new ArrayList<>();
     private Map<Integer, String> labelNameMap = new HashMap<>();
-    private OnItemChangedListener listener;
+    private OnItemChangedListener mListenre;
     private Context context;
     private DatabaseHelper databaseHelper;
 
-    public EventEditorAdapter(List<Map.Entry<Integer, Integer>> labelList, Context context, OnItemChangedListener listener) {
+    public EventEditorAdapter(List<Map.Entry<Integer, Integer>> labelList, Context context, OnItemChangedListener mListenre) {
         this.labelList = labelList;
         this.context = context;
-        this.listener = listener;
+        this.mListenre = mListenre;
         databaseHelper = ((MainActivity) context).databaseHelper;
         labelNameMap = databaseHelper.labelNameMap;
     }
@@ -55,7 +54,7 @@ public class EventEditorAdapter
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        listener.onItemChange(233, 233);
+                        mListenre.onItemChange(233, 233);
                         setSpinner(holder, menuItem.getItemId(), 0);
                         holder.imageButton.setImageResource(databaseHelper.getLabelIcon(menuItem.getItemId()));
                         return false;
@@ -65,7 +64,6 @@ public class EventEditorAdapter
             }
         });
         if (position <= 1 && key != 999) {
-            Log.d(TAG, "onBindViewHolder: key = " + key);
             setSpinner(holder, key, value);
         }
     }
@@ -79,6 +77,7 @@ public class EventEditorAdapter
         holder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mListenre.onItemChange(label, ++i);
             }
 
             @Override

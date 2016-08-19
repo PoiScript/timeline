@@ -1,10 +1,10 @@
 package com.poipoipo.timeline.ui;
 
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,12 +27,21 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class FragmentTimeline extends Fragment
-        implements View.OnClickListener, View.OnLongClickListener, Toolbar.OnMenuItemClickListener {
+        implements View.OnClickListener,
+        View.OnLongClickListener,
+        Toolbar.OnMenuItemClickListener,
+        DatePickerFragment.OnDateSetListener {
     EventEditorFragment eventEditor;
     private SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private MainActivity mainActivity;
-    private Calendar calendar;
+    private Calendar calendar = Calendar.getInstance();
     private DialogFragment datePicker;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_timeline, container, false);
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -57,13 +66,14 @@ public class FragmentTimeline extends Fragment
         fab.setOnLongClickListener(this);
         Button button = (Button) toolbar.findViewById(R.id.toolbar_date);
         button.setOnClickListener(this);
-        datePicker = DatePickerFragment.newInstance(Calendar.getInstance());
+        datePicker = DatePickerFragment.newInstance(Calendar.getInstance(), 0);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_date:
+                datePicker.setTargetFragment(this, 0);
                 datePicker.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:
@@ -72,6 +82,14 @@ public class FragmentTimeline extends Fragment
                 break;
             default:
         }
+    }
+
+    @Override
+    public void onDateSet(int type, int year, int month, int day) {
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        Toast.makeText(getActivity(), "type = " + type + " year = " + year + " month = " + month + " day = " + day, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -85,11 +103,5 @@ public class FragmentTimeline extends Fragment
     public boolean onMenuItemClick(MenuItem item) {
         Log.d("TEST", "TEST");
         return false;
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_timeline, container, false);
     }
 }

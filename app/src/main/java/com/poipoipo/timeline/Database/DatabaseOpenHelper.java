@@ -42,7 +42,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         for (String label : defaultLabels) {
             db.execSQL(CREATE_NEW_LABEL_PART_1 + label + CREATE_NEW_LABEL_PART_2);
             db.execSQL(EVENT_ADD_COLUMN_PART_1 + label + EVENT_ADD_COLUMN_PART_2);
-            db.execSQL("insert into AllLabel (label) values(?)", new String[]{label});
+            db.execSQL("insertEvent into AllLabel (label) values(?)", new String[]{label});
         }
         insertDefaultData(db);
     }
@@ -53,10 +53,10 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     private void insertDefaultData(SQLiteDatabase database) {
         for (String title : defaultTitle) {
-            database.execSQL("insert into Title (value) values(?)", new String[]{title});
+            database.execSQL("insertEvent into Title (value) values(?)", new String[]{title});
         }
         for (String subtitle : defaultCourseSubtitle) {
-            database.execSQL("insert into Subtitle (label) values(?)", new String[]{subtitle});
+            database.execSQL("insertEvent into Subtitle (label) values(?)", new String[]{subtitle});
         }
     }
 }

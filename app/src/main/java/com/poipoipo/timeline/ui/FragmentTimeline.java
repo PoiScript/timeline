@@ -29,9 +29,9 @@ import java.util.Locale;
 
 public class FragmentTimeline extends Fragment
         implements View.OnClickListener, View.OnLongClickListener, Toolbar.OnMenuItemClickListener {
+    List<Event> events = new ArrayList<>();
     private SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private MainActivity mainActivity;
-    List<Event> events = new ArrayList<>();
     private Calendar calendar;
     private DialogFragment dialogFragment;
 
@@ -75,7 +75,7 @@ public class FragmentTimeline extends Fragment
 
     @Override
     public boolean onLongClick(View view) {
-        mainActivity.databaseHelper.insert(new Event(mainActivity.getCurrentTimestamp()));
+        mainActivity.databaseHelper.insertEvent(mainActivity.getCurrentTimestamp());
         Toast.makeText(mainActivity, "Event Created", Toast.LENGTH_SHORT).show();
         return true;
     }

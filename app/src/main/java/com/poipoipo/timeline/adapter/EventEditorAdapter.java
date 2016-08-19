@@ -2,12 +2,15 @@ package com.poipoipo.timeline.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 
 import com.poipoipo.timeline.R;
@@ -15,6 +18,7 @@ import com.poipoipo.timeline.database.DatabaseHelper;
 import com.poipoipo.timeline.ui.MainActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,41 +26,65 @@ public class EventEditorAdapter
         extends RecyclerView.Adapter<EventEditorAdapter.LabelViewHolder> {
     private static final String TAG = "EventEditorAdapter";
     private List<Map.Entry<Integer, Integer>> labelList = new ArrayList<>();
+    private Map<Integer, String> labelNameMap = new HashMap<>();
+    private OnItemChangedListener listener;
     private Context context;
     private DatabaseHelper databaseHelper;
 
-    public EventEditorAdapter(List<Map.Entry<Integer, Integer>> labelList, Context context) {
+    public EventEditorAdapter(List<Map.Entry<Integer, Integer>> labelList, Context context, OnItemChangedListener listener) {
         this.labelList = labelList;
         this.context = context;
+        this.listener = listener;
         databaseHelper = ((MainActivity) context).databaseHelper;
+        labelNameMap = databaseHelper.labelNameMap;
     }
 
     @Override
-    public void onBindViewHolder(LabelViewHolder holder, int position) {
+    public void onBindViewHolder(final LabelViewHolder holder, int position) {
         final int key = labelList.get(position).getKey();
         final int value = labelList.get(position).getValue();
-        holder.imageView.setImageResource(databaseHelper.getLabelIcon(key));
-        if (position <= 1) {
-            ArrayAdapter adapter = new ArrayAdapter<>(context,
-                    android.R.layout.simple_spinner_dropdown_item,
-                    new ArrayList<>(databaseHelper.labelMap.get(key).name.values()));
-            holder.spinner.setAdapter(adapter);
-            holder.spinner.setSelection(databaseHelper.labelMap.get(key).index.get(value));
-            holder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if (i + 1 == value) {
-                        ((MainActivity) context).changeLog(key, 0, false);
-                    } else {
-                        ((MainActivity) context).changeLog(key, i + 1, true);
+        holder.imageButton.setImageResource(databaseHelper.getLabelIcon(key));
+        holder.imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final PopupMenu popup = new PopupMenu(context, view);
+                int i = 0;
+                for (Map.Entry<Integer, String> entry : labelNameMap.entrySet()) {
+                    popup.getMenu().add(1, entry.getKey(), i++, entry.getValue());
+                }
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        listener.onItemChange(233, 233);
+                        setSpinner(holder, menuItem.getItemId(), 0);
+                        holder.imageButton.setImageResource(databaseHelper.getLabelIcon(menuItem.getItemId()));
+                        return false;
                     }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                }
-            });
+                });
+                popup.show();
+            }
+        });
+        if (position <= 1 && key != 999) {
+            Log.d(TAG, "onBindViewHolder: key = " + key);
+            setSpinner(holder, key, value);
         }
+    }
+
+    private void setSpinner(LabelViewHolder holder, final int label, int position) {
+        ArrayAdapter adapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_spinner_dropdown_item,
+                new ArrayList<>(databaseHelper.labelMap.get(label).name.values()));
+        holder.spinner.setAdapter(adapter);
+//        holder.spinner.setSelection(databaseHelper.labelMap.get(label).index.get(position));
+        holder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
     }
 
     @Override
@@ -70,13 +98,17 @@ public class EventEditorAdapter
         return labelList.size();
     }
 
+    public interface OnItemChangedListener {
+        void onItemChange(int key, int value);
+    }
+
     static class LabelViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+        ImageButton imageButton;
         Spinner spinner;
 
         public LabelViewHolder(final View view) {
             super(view);
-            imageView = (ImageView) view.findViewById(R.id.edit_label_icon);
+            imageButton = (ImageButton) view.findViewById(R.id.edit_label_icon);
             spinner = (Spinner) view.findViewById(R.id.edit_label_button);
         }
     }

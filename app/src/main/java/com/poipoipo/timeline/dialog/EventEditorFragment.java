@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -18,33 +17,46 @@ import android.widget.Toast;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventEditorAdapter;
 import com.poipoipo.timeline.data.Event;
+import com.poipoipo.timeline.data.Label;
 import com.poipoipo.timeline.data.MyEntry;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class EventEditorFragment extends DialogFragment
-        implements Toolbar.OnMenuItemClickListener {
+        implements Toolbar.OnMenuItemClickListener,
+        View.OnClickListener,
+        EventEditorAdapter.OnItemChangedListener {
     private static final String TAG = "EventEditorFragment";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy     HH:mm", Locale.getDefault());
-    RecyclerView recyclerView;
-    Button start;
-    Button end;
     View view;
-    EventEditorListener mListener;
     Event event;
     Toolbar toolbar;
-    private EventEditorAdapter adapter;
     private List<Map.Entry<Integer, Integer>> labelList = new ArrayList<>();
+    private Map<Integer, Integer> changeLog = new HashMap<>();
+    private EventEditorListener mListener;
+    private EventEditorAdapter adapter;
+    private RecyclerView recyclerView;
+    private Button start;
+    private Button end;
+
+    public static EventEditorFragment newInstance(Event event) {
+
+        Bundle args = new Bundle();
+        args.putSerializable("event", event);
+        EventEditorFragment fragment = new EventEditorFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        view = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_event, null);
+        view = View.inflate(getActivity(), R.layout.fragment_edit_event, null);
         recyclerView = (RecyclerView) view.findViewById(R.id.event_editor_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
@@ -55,13 +67,20 @@ public class EventEditorFragment extends DialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        event = (Event) getArguments().getSerializable("event");
-        labelList = event.getLabelList();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        adapter = new EventEditorAdapter(labelList, getActivity());
+        event = (Event) getArguments().getSerializable("event");
+        try {
+            labelList = event.getLabelList();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return builder.setMessage("Error").create();
+        }
+        adapter = new EventEditorAdapter(labelList, getActivity(), this);
         recyclerView.setAdapter(adapter);
         start.setText(dateFormat.format(event.getStart() * 1000L));
         end.setText(dateFormat.format(event.getStart() * 1000L));
+        end.setOnClickListener(this);
+        start.setOnClickListener(this);
         toolbar.setTitle("Edit Event Info");
         toolbar.inflateMenu(R.menu.menu_event_editor);
         toolbar.setOnMenuItemClickListener(this);
@@ -69,7 +88,7 @@ public class EventEditorFragment extends DialogFragment
                 .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mListener.onPositiveClick(event.getStart());
+                        mListener.onPositiveClick(event.getStart(), changeLog);
                     }
                 })
                 .setNegativeButton("CANCEL", null)
@@ -77,12 +96,18 @@ public class EventEditorFragment extends DialogFragment
     }
 
     @Override
+    public void onClick(View view) {
+        DialogFragment fragment = new TimePickerFragment();
+        fragment.show(getFragmentManager(), "timePicker");
+    }
+
+    @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                labelList.add(new MyEntry<>(2, 2));
+                labelList.add(new MyEntry<>(Label.INSERT, 0));
                 adapter.notifyItemInserted(labelList.size());
-                Toast.makeText(getActivity(), "You Clicked Add", Toast.LENGTH_SHORT).show();
+                changeLog.put(Label.INSERT, 0);
         }
         return false;
     }
@@ -107,23 +132,12 @@ public class EventEditorFragment extends DialogFragment
         }
     }
 
-    private Map<Integer, Integer> init() {
-        Map<Integer, Integer> map = new LinkedHashMap<>();
-        map.put(1, 1);
-        map.put(2, 5);
-        for (int i = 4; i < 9; i++) {
-            map.put(i * 2, i * 3);
-        }
-        return map;
-    }
-
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        Log.d(TAG, "onDismiss: ");
-        super.onDismiss(dialog);
+    public void onItemChange(int key, int value) {
+        Toast.makeText(getActivity(), "Test", Toast.LENGTH_SHORT).show();
     }
 
     public interface EventEditorListener {
-        void onPositiveClick(int start);
+        void onPositiveClick(int start, Map<Integer, Integer> changeLog);
     }
 }

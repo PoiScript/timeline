@@ -20,7 +20,6 @@ import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.database.DatabaseHelper;
 import com.poipoipo.timeline.dialog.EventEditorFragment;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
@@ -48,7 +47,6 @@ public class MainActivity extends AppCompatActivity
         }
     };
     private Fragment fragment;
-    private Map<Integer, Integer> log = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,20 +115,9 @@ public class MainActivity extends AppCompatActivity
         return timestampUtil.getCurrentTimestamp();
     }
 
-    public void changeLog(int key, int value, boolean isChanged) {
-        if (isChanged) {
-            // when value == 999 remove this item
-            log.put(key, value);
-        } else {
-            log.remove(key);
-        }
-    }
-
     @Override
-    public void onPositiveClick(int start) {
-        if (!log.isEmpty()) {
-            databaseHelper.update(start, log);
-            Toast.makeText(this, "Change Saved", Toast.LENGTH_SHORT).show();
-        }
+    public void onPositiveClick(int start, Map<Integer, Integer> changeLog) {
+        databaseHelper.update(start, changeLog);
+        Toast.makeText(this, "Change Saved", Toast.LENGTH_SHORT).show();
     }
 }

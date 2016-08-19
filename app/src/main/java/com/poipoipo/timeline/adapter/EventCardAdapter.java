@@ -29,21 +29,6 @@ public class EventCardAdapter
         this.context = context;
     }
 
-    static class EventsViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
-        TextView title;
-        TextView time;
-        TextView location;
-
-        public EventsViewHolder(final View view) {
-            super(view);
-            cardView = (CardView) view.findViewById(R.id.event_card);
-            title = (TextView) view.findViewById(R.id.event_title);
-            time = (TextView) view.findViewById(R.id.event_time);
-            location = (TextView) view.findViewById(R.id.event_location);
-        }
-    }
-
     @Override
     public EventsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         fragment = new EventEditorFragment();
@@ -72,9 +57,6 @@ public class EventCardAdapter
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                intent.putExtra(Event.EVENT, event);
-//                context.startActivity(intent);
-//                DialogFragment fragment = EventEditorFragment.newInstance(event);
                 fragment.update(event);
                 fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
             }
@@ -84,5 +66,20 @@ public class EventCardAdapter
     @Override
     public int getItemCount() {
         return events.size();
+    }
+
+    static class EventsViewHolder extends RecyclerView.ViewHolder {
+        CardView cardView;
+        TextView title;
+        TextView time;
+        TextView location;
+
+        public EventsViewHolder(final View view) {
+            super(view);
+            cardView = (CardView) view.findViewById(R.id.event_card);
+            title = (TextView) view.findViewById(R.id.event_title);
+            time = (TextView) view.findViewById(R.id.event_time);
+            location = (TextView) view.findViewById(R.id.event_location);
+        }
     }
 }

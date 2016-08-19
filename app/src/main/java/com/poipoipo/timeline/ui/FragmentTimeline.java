@@ -20,20 +20,19 @@ import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventCardAdapter;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.dialog.DatePickerFragment;
+import com.poipoipo.timeline.dialog.EventEditorFragment;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 public class FragmentTimeline extends Fragment
         implements View.OnClickListener, View.OnLongClickListener, Toolbar.OnMenuItemClickListener {
-    List<Event> events = new ArrayList<>();
+    EventEditorFragment eventEditor;
     private SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private MainActivity mainActivity;
     private Calendar calendar;
-    private DialogFragment dialogFragment;
+    private DialogFragment datePicker;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -58,16 +57,18 @@ public class FragmentTimeline extends Fragment
         fab.setOnLongClickListener(this);
         Button button = (Button) toolbar.findViewById(R.id.toolbar_date);
         button.setOnClickListener(this);
-        dialogFragment = DatePickerFragment.newInstance(Calendar.getInstance());
+        datePicker = DatePickerFragment.newInstance(Calendar.getInstance());
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_date:
-                dialogFragment.show(getActivity().getFragmentManager(), "datePicker");
+                datePicker.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:
+                eventEditor = EventEditorFragment.newInstance(new Event(((MainActivity) getActivity()).getCurrentTimestamp()));
+                eventEditor.show(getActivity().getFragmentManager(), "eventEditor");
                 break;
             default:
         }

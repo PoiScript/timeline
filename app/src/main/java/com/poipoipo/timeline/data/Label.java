@@ -8,12 +8,12 @@ public class Label {
     public static final int TITLE = 0;
     public static final int SUBTITLE = 1;
     public static final int LOCATION = 2;
-    public static final int END = 3;
-    public static final int START = 4;
-    public static final int TEACHER = 5;
-    public static final int COST = 6;
-    public static final int NOTE = 7;
 
+    public static int INSERT = 999;
+    public static int DELETE = 888;
+    public static int START = 777;
+    public static int END = 666;
+    public static int RESET = 555;
     public Map<Integer, Integer> index = new LinkedHashMap<>();
     public Map<Integer, String> name = new LinkedHashMap<>();
     public Map<Integer, Integer> usage = new LinkedHashMap<>();

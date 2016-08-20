@@ -5,7 +5,7 @@
 
     <ImageButton
         android:id="@+id/edit_label_icon"
-        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        style="@style/AppTheme.Button"
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:contentDescription="Edit Label Type"

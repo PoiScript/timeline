@@ -20,11 +20,7 @@
     <string name="dialog_edit">Edit</string>
     <string name="dialog_cancel">Cancel</string>
 
-    <string name="edit_no_title">Add your title…</string>
-    <string name="edit_no_end">Set Ending Time</string>
-    <string name="edit_no_location">Add Location</string>
-    <string name="edit_no_teacher">Add Teacher</string>
-    <string name="edit_no_cost">Add Cost</string>
+    <string name="editor_new_label">Add A New Label…</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

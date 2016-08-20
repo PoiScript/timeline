@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventCardAdapter;
 import com.poipoipo.timeline.data.Event;
+import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.dialog.DatePickerFragment;
 import com.poipoipo.timeline.dialog.EventEditorFragment;
 
@@ -46,7 +47,7 @@ public class FragmentTimeline extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mainActivity = (MainActivity) getActivity();
-        int todayTimestamp = mainActivity.getTodayTimestamp();
+        int todayTimestamp = TimestampUtil.getTodayTimestamp();
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.timeline_toolbar);
         toolbar.inflateMenu(R.menu.menu_timeline);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
@@ -54,7 +55,7 @@ public class FragmentTimeline extends Fragment
         toolbar.setOnMenuItemClickListener(this);
         Button editDate = (Button) view.findViewById(R.id.toolbar_date);
         editDate.setOnClickListener(this);
-        editDate.setText(format.format(mainActivity.getTodayTimestamp() * 1000L));
+        editDate.setText(format.format(TimestampUtil.getTodayTimestamp() * 1000L));
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mainActivity);
         recyclerView.setLayoutManager(layoutManager);
@@ -66,7 +67,7 @@ public class FragmentTimeline extends Fragment
         fab.setOnLongClickListener(this);
         Button button = (Button) toolbar.findViewById(R.id.toolbar_date);
         button.setOnClickListener(this);
-        datePicker = DatePickerFragment.newInstance(Calendar.getInstance(), 0);
+        datePicker = DatePickerFragment.newInstance(2, 3, 3, 3);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class FragmentTimeline extends Fragment
                 datePicker.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:
-                eventEditor = EventEditorFragment.newInstance(new Event(((MainActivity) getActivity()).getCurrentTimestamp()));
+                eventEditor = EventEditorFragment.newInstance(new Event(TimestampUtil.getCurrentTimestamp()));
                 eventEditor.show(getActivity().getFragmentManager(), "eventEditor");
                 break;
             default:
@@ -94,7 +95,7 @@ public class FragmentTimeline extends Fragment
 
     @Override
     public boolean onLongClick(View view) {
-        mainActivity.databaseHelper.insertEvent(mainActivity.getCurrentTimestamp());
+        mainActivity.databaseHelper.insertEvent(TimestampUtil.getCurrentTimestamp());
         Toast.makeText(mainActivity, "Event Created", Toast.LENGTH_SHORT).show();
         return true;
     }

@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity
     public DatabaseHelper databaseHelper;
     FragmentManager manager;
     private DrawerLayout drawerLayout;
-    private TimestampUtil timestampUtil = new TimestampUtil();
     public final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity
                 case MESSAGE_CREATE:
                     break;
                 case MESSAGE_QUICK_CREATE:
-                    databaseHelper.insertEvent(timestampUtil.getCurrentTimestamp());
+                    databaseHelper.insertEvent(TimestampUtil.getCurrentTimestamp());
                     Toast.makeText(getApplicationContext(), "Event Created", Toast.LENGTH_SHORT).show();
                     break;
             }
@@ -88,13 +87,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public int getTodayTimestamp() {
-        return timestampUtil.getTodayTimestamp();
-    }
-
-    public int getCurrentTimestamp() {
-        return timestampUtil.getCurrentTimestamp();
-    }
 
     @Override
     public void onPositiveClick(int start, Map<Integer, Integer> changeLog) {

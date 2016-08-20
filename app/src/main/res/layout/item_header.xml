@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:stretchColumns="1">
+
+    <TableRow>
+
+        <ImageButton
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:padding="@dimen/dialog_icon_padding"
+            android:src="@drawable/ic_time_start" />
+
+        <Button
+            android:id="@+id/event_editor_start_date"
+            style="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/event_editor_start_time"
+            style="@style/AppTheme.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow>
+
+        <ImageButton
+            style="@style/AppTheme.Button"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:padding="@dimen/dialog_icon_padding"
+            android:src="@drawable/ic_time_end" />
+
+        <Button
+            android:id="@+id/event_editor_end_date"
+            style="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/event_editor_end_time"
+            style="@style/AppTheme.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+</TableLayout>

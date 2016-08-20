@@ -26,4 +26,9 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
+
+    <style name="AppTheme.Button.Fade">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">#B0BEC5</item>
+    </style>
 </resources>

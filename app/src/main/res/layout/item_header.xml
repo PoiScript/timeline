@@ -7,6 +7,7 @@
     <TableRow>
 
         <ImageButton
+            android:id="@+id/event_editor_start_current"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="65dp"
             android:layout_height="65dp"
@@ -29,6 +30,7 @@
     <TableRow>
 
         <ImageButton
+            android:id="@+id/event_editor_end_current"
             style="@style/AppTheme.Button"
             android:layout_width="65dp"
             android:layout_height="65dp"

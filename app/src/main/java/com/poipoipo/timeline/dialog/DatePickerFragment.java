@@ -6,12 +6,13 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.widget.DatePicker;
 
-import com.poipoipo.timeline.DateMessageEvent;
+import com.poipoipo.timeline.data.DateMessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
+    private static final String TAG = "DatePickerFragment";
     private static final String YEAR = "year";
     private static final String MONTH = "month";
     private static final String DAY = "day";
@@ -50,7 +51,9 @@ public class DatePickerFragment extends DialogFragment
         if (mListener != null) {
             mListener.onDateSet(getArguments().getInt(TYPE), i, i1, i2);
         }
-        EventBus.getDefault().post(new DateMessageEvent(getArguments().getInt(TYPE), i, i1, i2));
+        if (i != getArguments().getInt(YEAR) || i1 != getArguments().getInt(MONTH) || i2 != getArguments().getInt(DAY)) {
+            EventBus.getDefault().post(new DateMessageEvent(getArguments().getInt(TYPE), i, i1, i2));
+        }
     }
 
     public interface OnDateSetListener {

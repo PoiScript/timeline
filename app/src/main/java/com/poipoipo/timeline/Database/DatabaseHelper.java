@@ -113,6 +113,7 @@ public class DatabaseHelper {
             do {
                 Map<Integer, Integer> map = new LinkedHashMap<>();
                 Event event = new Event(cursor.getInt(cursor.getColumnIndex("start")));
+                event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
                 for (Map.Entry<Integer, String> entry : labelNameMap.entrySet()) {
                     if (cursor.getInt(cursor.getColumnIndex(entry.getValue())) != 0) {
                         map.put(entry.getKey(), cursor.getInt(cursor.getColumnIndex(entry.getValue())));
@@ -130,15 +131,15 @@ public class DatabaseHelper {
         int icon = 0;
         switch (id) {
             case 1:
-                icon = R.drawable.ic_title;
+                icon = R.drawable.ic_category;
                 break;
             case 2:
-                icon = R.drawable.ic_search;
+                icon = R.drawable.ic_content;
                 break;
             case 3:
                 icon = R.drawable.ic_location;
                 break;
-            case 999:
+            case Event.ERROR_LABEL:
                 icon = R.drawable.ic_touch_app_black_24dp;
         }
         return icon;

@@ -32,6 +32,7 @@ public class FragmentTimeline extends Fragment
         View.OnLongClickListener,
         Toolbar.OnMenuItemClickListener,
         DatePickerFragment.OnDateSetListener {
+    private static final String TAG = "FragmentTimeline";
     EventEditorFragment eventEditor;
     private SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private MainActivity mainActivity;

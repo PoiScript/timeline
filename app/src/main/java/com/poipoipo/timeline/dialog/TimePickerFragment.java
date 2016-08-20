@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
-import com.poipoipo.timeline.TimeMessageEvent;
+import com.poipoipo.timeline.data.TimeMessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -35,7 +35,7 @@ public class TimePickerFragment extends DialogFragment
 
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        if (getArguments() != null) {
+        if (i != getArguments().getInt(HOUR) || i1 != getArguments().getInt(MIN)) {
             EventBus.getDefault().post(new TimeMessageEvent(getArguments().getInt(TYPE), i, i1));
         }
     }

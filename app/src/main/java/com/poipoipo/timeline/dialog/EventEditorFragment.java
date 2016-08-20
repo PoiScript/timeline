@@ -6,20 +6,21 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventEditorAdapter;
 import com.poipoipo.timeline.data.Event;
 
-import java.util.ArrayList;
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class EventEditorFragment extends DialogFragment
@@ -29,14 +30,13 @@ public class EventEditorFragment extends DialogFragment
     View view;
     Event event;
     Toolbar toolbar;
-    private List<Map.Entry<Integer, Integer>> labelList = new ArrayList<>();
     private Map<Integer, Integer> changeLog = new HashMap<>();
     private EventEditorListener mListener;
     private EventEditorAdapter adapter;
     private RecyclerView recyclerView;
+    private Snackbar errorSnackbar;
 
     public static EventEditorFragment newInstance(Event event) {
-
         Bundle args = new Bundle();
         args.putSerializable("event", event);
         EventEditorFragment fragment = new EventEditorFragment();
@@ -63,15 +63,15 @@ public class EventEditorFragment extends DialogFragment
         toolbar.setTitle("Edit Event Info");
         toolbar.inflateMenu(R.menu.menu_event_editor);
         toolbar.setOnMenuItemClickListener(this);
-        return builder.setView(view)
+        builder.setView(view)
                 .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mListener.onPositiveClick(event.getStart(), changeLog);
                     }
                 })
-                .setNegativeButton("CANCEL", null)
-                .create();
+                .setNegativeButton("CANCEL", null);
+        return builder.create();
     }
 
     @Override
@@ -90,9 +90,47 @@ public class EventEditorFragment extends DialogFragment
     }
 
     @Override
-    public void onEventChange(int key, int value) {
+    public void onStop() {
+        EventBus.getDefault().unregister(adapter);
+        super.onStop();
+    }
+
+    @Override
+    public void onEventChanged(int key, int value) {
+        Log.d(TAG, "onEventChanged: get key = " + key + " value = " + value);
         changeLog.put(key, value);
-        Toast.makeText(getActivity(), "Test", Toast.LENGTH_SHORT).show();
+        if (errorSnackbar == null) {
+            errorSnackbar = Snackbar.make(recyclerView, R.string.editor_error_time, Snackbar.LENGTH_INDEFINITE);
+        }
+        if ((changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_TIME) || (changeLog.containsKey(Event.ERROR_TIME) && !errorSnackbar.isShown())) {
+            errorSnackbar.setText(R.string.editor_error_time).show();
+        } else if ((changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_LABEL) || (changeLog.containsKey(Event.ERROR_LABEL) && !errorSnackbar.isShown())) {
+            errorSnackbar.setText(R.string.editor_error_label).show();
+        }
+    }
+
+    @Override
+    public void onKeyRemoved(int key) {
+        if (errorSnackbar == null) {
+            errorSnackbar = Snackbar.make(recyclerView, R.string.editor_error_time, Snackbar.LENGTH_INDEFINITE);
+        }
+        if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_TIME) {
+            errorSnackbar.setText(R.string.editor_error_label);
+        }
+        if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_LABEL) {
+            errorSnackbar.setText(R.string.editor_error_time);
+        }
+        changeLog.remove(key);
+        if (!changeLog.containsKey(Event.ERROR_LABEL) && !changeLog.containsKey(Event.ERROR_TIME) && errorSnackbar.isShown()) {
+            errorSnackbar.dismiss();
+        }
+        Log.d(TAG, "onKeyRemoved: remove key = " + key);
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        changeLog.clear();
+        super.onDismiss(dialog);
     }
 
     @Override

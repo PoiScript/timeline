@@ -1,4 +1,4 @@
-package com.poipoipo.timeline;
+package com.poipoipo.timeline.data;
 
 public class TimeMessageEvent {
     public final int type;

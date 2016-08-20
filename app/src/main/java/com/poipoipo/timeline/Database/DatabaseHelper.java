@@ -75,7 +75,13 @@ public class DatabaseHelper {
     public void update(int start, Map<Integer, Integer> map) {
         values.clear();
         for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-            values.put(labelNameMap.get(entry.getKey()), entry.getValue());
+            if (entry.getKey() == Event.START) {
+                values.put("start", entry.getValue());
+            } else if (entry.getKey() == Event.END) {
+                values.put("end", entry.getValue());
+            } else {
+                values.put(labelNameMap.get(entry.getKey()), entry.getValue());
+            }
         }
         database.update(TABLE_EVENT, values, "start = ?", new String[]{Integer.toString(start)});
     }

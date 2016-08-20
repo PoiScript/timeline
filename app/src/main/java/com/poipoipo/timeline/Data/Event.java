@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class Event implements Serializable {
 
+    public static final int START = 0;
+    public static final int END = -1;
     public boolean hasTitle = false;
     public boolean hasEndTime = false;
     public boolean hasSubtitle = false;

@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
+import com.poipoipo.timeline.TimeMessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Calendar;
 
 public class TimePickerFragment extends DialogFragment
@@ -15,7 +19,6 @@ public class TimePickerFragment extends DialogFragment
     private static final String MIN = "min";
     private static final String TYPE = "type";
     Calendar calendar = Calendar.getInstance();
-    private OnTimeSetListener mListener;
 
     public static TimePickerFragment newInstance(Calendar calendar, int type) {
         Bundle args = new Bundle();
@@ -25,16 +28,6 @@ public class TimePickerFragment extends DialogFragment
         TimePickerFragment fragment = new TimePickerFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        try {
-            mListener = (OnTimeSetListener) getTargetFragment();
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Calling Fragment must implement OnTimeListener");
-        }
     }
 
     @Override
@@ -51,11 +44,8 @@ public class TimePickerFragment extends DialogFragment
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         calendar.set(Calendar.HOUR, i);
         calendar.set(Calendar.MINUTE, i1);
-        mListener.onTimeSet(getArguments().getInt(TYPE), i, i1);
+        if (getArguments() != null) {
+            EventBus.getDefault().post(new TimeMessageEvent(getArguments().getInt(TYPE), i, i1));
+        }
     }
-
-    public interface OnTimeSetListener {
-        void onTimeSet(int type, int hour, int minute);
-    }
-
 }

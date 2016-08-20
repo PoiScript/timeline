@@ -3,9 +3,12 @@ package com.poipoipo.timeline.dialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.widget.DatePicker;
+
+import com.poipoipo.timeline.DateMessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Calendar;
 
@@ -55,12 +58,10 @@ public class DatePickerFragment extends DialogFragment
         calendar.set(Calendar.YEAR, i);
         calendar.set(Calendar.MONTH, ++i1);
         calendar.set(Calendar.DAY_OF_MONTH, i2);
-        mListener.onDateSet(getArguments().getInt(TYPE), i, i1, i2);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+        if (mListener != null) {
+            mListener.onDateSet(getArguments().getInt(TYPE), i, i1, i2);
+        }
+        EventBus.getDefault().post(new DateMessageEvent(getArguments().getInt(TYPE), i, i1, i2));
     }
 
     public interface OnDateSetListener {

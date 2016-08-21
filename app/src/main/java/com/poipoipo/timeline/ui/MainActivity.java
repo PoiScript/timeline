@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
     }
 
     @Override
@@ -87,10 +86,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
     @Override
-    public void onPositiveClick(int start, Map<Integer, Integer> changeLog) {
-        databaseHelper.update(start, changeLog);
+    public void onPositiveClick(int id, Map<Integer, Integer> changeLog) {
+        databaseHelper.update(id, changeLog);
         Toast.makeText(this, "Change Saved", Toast.LENGTH_SHORT).show();
     }
 }

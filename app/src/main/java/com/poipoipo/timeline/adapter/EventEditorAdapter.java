@@ -3,12 +3,9 @@ package com.poipoipo.timeline.adapter;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,7 +17,7 @@ import android.widget.Spinner;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.data.DateMessageEvent;
 import com.poipoipo.timeline.data.Event;
-import com.poipoipo.timeline.data.MyEntry;
+import com.poipoipo.timeline.data.Label;
 import com.poipoipo.timeline.data.TimeMessageEvent;
 import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.database.DatabaseHelper;
@@ -31,24 +28,22 @@ import com.poipoipo.timeline.ui.MainActivity;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class EventEditorAdapter
         extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements View.OnClickListener {
+        implements View.OnClickListener, Serializable {
     private static final String TAG = "EventEditorAdapter";
     private static final int TYPE_NOR = 1, TYPE_HEADER = 0, TYPE_FOOTER = 2;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
     private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private List<Map.Entry<Integer, Integer>> labelList = new ArrayList<>();
-    private Map<Integer, String> labelNameMap = new HashMap<>();
-    private Map<Integer, Integer> labelsMap;
+    private Map<Integer, Integer> labels;
     private OnEventChangedListener mListener;
     private Calendar startCalendar = Calendar.getInstance();
     private Calendar endCalendar = Calendar.getInstance();
@@ -56,78 +51,72 @@ public class EventEditorAdapter
     private FragmentManager manager;
     private DatabaseHelper databaseHelper;
     private HeaderViewHolder headerViewHolder;
-    private Event event;
+    private int key;
+    private int value;
+    private SpinnerAdapter adapter;
 
     public EventEditorAdapter(Event event, Context context, OnEventChangedListener mListener) {
-        this.event = event;
-        this.labelList = event.getLabelList();
+        this.labels = event.getLabelsMap();
         startCalendar.setTimeInMillis(event.getStart() * 1000L);
         endCalendar.setTimeInMillis(event.getEnd() * 1000L);
         this.context = context;
         manager = ((MainActivity) context).getFragmentManager();
         this.mListener = mListener;
         databaseHelper = ((MainActivity) context).databaseHelper;
-        labelNameMap = databaseHelper.labelNameMap;
+        labels = event.getLabelsMap();
         EventBus.getDefault().register(this);
-        labelsMap = event.getLabelsMap();
+        setAdapter();
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == TYPE_NOR) {
             final LabelViewHolder viewHolder = (LabelViewHolder) holder;
-            final int index = viewHolder.getAdapterPosition() - 1;
-            final int key = labelList.get(index).getKey();
-            final int value = labelList.get(index).getValue();
-            viewHolder.imageButton.setImageResource(databaseHelper.getLabelIcon(key));
-            viewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+            final int key = (int) labels.keySet().toArray()[position - 1];
+            final int value = labels.get(key);
+            final Label label = databaseHelper.labelMap.get(key);
+            Log.d(TAG, "onBindViewHolder: key = " + key);
+            Log.d(TAG, "onBindViewHolder: value = " + value);
+            viewHolder.icon.setAdapter(adapter);
+            viewHolder.icon.setSelection(label.position);
+            viewHolder.icon.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onClick(View view) {
-                    PopupMenu popup = new PopupMenu(context, view, Gravity.START);
-                    int i = 0;
-                    for (Map.Entry<Integer, String> entry : labelNameMap.entrySet()) {
-                        if (!labelsMap.containsKey(entry.getKey())) {
-                            popup.getMenu().add(1, entry.getKey(), i++, entry.getValue());
-                        }
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    if (++i == viewHolder.icon.getAdapter().getCount()) {
+                        labels.remove(key);
+                        notifyItemRemoved(viewHolder.getAdapterPosition());
+                    } else if (i != key) {
+                        mListener.onEventChanged(i, 1);
+                        labels.put(i, 1);
+                        labels.remove(key);
+                        notifyDataSetChanged();
                     }
-                    popup.getMenu().add(1, Event.ERROR_LABEL, 999, "Remove");
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuItem) {
-                            if (menuItem.getItemId() == Event.ERROR_LABEL) {
-                                removeItem(index + 1);
-                                return false;
-                            }
-                            updateItemKey(index + 1, menuItem.getItemId());
-                            return false;
-                        }
-                    });
-                    popup.show();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
                 }
             });
-            if (key != Event.ERROR_LABEL) {
-                Log.d(TAG, "onBindViewHolder: setSpinner");
-                ArrayAdapter adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item,
-                        new ArrayList<>(databaseHelper.labelMap.get(key).name.values()));
-                viewHolder.spinner.setAdapter(adapter);
-                viewHolder.spinner.setSelection(databaseHelper.labelMap.get(key).index.get(position));
-                viewHolder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        if (i != viewHolder.spinner.getSelectedItemPosition()) {
-                            Log.d(TAG, "onItemSelected: i = " + i + " selectedPosition = " + viewHolder.spinner.getSelectedItemPosition());
-                            updateItemValue(index + 1, ++i);
-                        }
-                        Log.d(TAG, "onItemSelected: ");
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-                    }
-                });
-            } else {
-                viewHolder.spinner.setAdapter(null);
+            viewHolder.text.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(label.name.values())));
+            if (value != 0) {
+                viewHolder.text.setSelection(label.index.get(value));
             }
+            viewHolder.text.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    if (++i != value) {
+                        mListener.onEventChanged(key, i);
+                        labels.put(key, i);
+                        notifyItemChanged(viewHolder.getAdapterPosition());
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
         } else if (getItemViewType(position) == TYPE_HEADER) {
             headerViewHolder = (HeaderViewHolder) holder;
             headerViewHolder.startDate.setOnClickListener(this);
@@ -143,42 +132,16 @@ public class EventEditorAdapter
         }
     }
 
-    private void insertItem() {
-        if (labelList.isEmpty() || labelList.get(labelList.size() - 1).getKey() != Event.ERROR_LABEL) {
-            labelList.add(new MyEntry<>(Event.ERROR_LABEL, 0));
-            notifyItemInserted(labelList.size());
-            mListener.onEventChanged(Event.ERROR_LABEL, 0);
+    private void setAdapter() {
+        List<String> text = new ArrayList<>();
+        List<Integer> icon = new ArrayList<>();
+        for (Label label : databaseHelper.labelMap.values()) {
+            text.add(label.value);
+            icon.add(label.icon);
         }
-    }
-
-    private void updateItemKey(int position, int key) {
-        Log.d(TAG, "updateItemKey: position = " + position + " key = " + key);
-        labelsMap.remove(labelList.get(position - 1).getKey());
-        mListener.onKeyRemoved(labelList.get(position - 1).getKey());
-        labelList.set(position - 1, new MyEntry<>(key, 1));
-        labelsMap.put(key, 1);
-        notifyDataSetChanged();
-        mListener.onEventChanged(key, 1);
-    }
-
-    private void updateItemValue(int position, int value) {
-        Log.d(TAG, "updateItemValue: position = " + position + " value = " + value);
-        labelList.set(position - 1, new MyEntry<>(labelList.get(position - 1).getKey(), value));
-        notifyDataSetChanged();
-        mListener.onEventChanged(labelList.get(position - 1).getKey(), value);
-    }
-
-    private void removeItem(int position) {
-        Log.d(TAG, "removeItem:  position " + position);
-        if (event.getLabelsMap().containsKey(labelList.get(position - 1).getKey())) {
-            mListener.onEventChanged(labelList.get(position - 1).getKey(), 0);
-        } else {
-            mListener.onKeyRemoved(labelList.get(position - 1).getKey());
-        }
-        labelsMap.remove(labelList.get(position - 1).getKey());
-        labelList.remove(position - 1);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, labelList.size());
+        text.add("Remove");
+        icon.add(R.drawable.ic_remove);
+        adapter = new SpinnerAdapter(context, text, icon);
     }
 
     private void updateTime(int type) {
@@ -219,13 +182,24 @@ public class EventEditorAdapter
             case R.id.event_editor_start_current:
                 startCalendar = Calendar.getInstance();
                 updateTime(Event.START);
+                mListener.onEventChanged(Event.START, TimestampUtil.getTimestampByCalendar(startCalendar));
                 break;
             case R.id.event_editor_end_current:
                 endCalendar = Calendar.getInstance();
                 updateTime(Event.END);
+                mListener.onEventChanged(Event.END, TimestampUtil.getTimestampByCalendar(endCalendar));
                 break;
             case R.id.event_editor_add_label:
-                insertItem();
+                if (labels.size() < databaseHelper.labelMap.size()) {
+                    for (Integer key : databaseHelper.labelMap.keySet()) {
+                        if (!labels.containsKey(key)) {
+                            labels.put(key, 1);
+                            notifyItemInserted(getItemCount());
+                            mListener.onEventChanged(key, 1);
+                            break;
+                        }
+                    }
+                }
         }
     }
 
@@ -269,7 +243,7 @@ public class EventEditorAdapter
     public int getItemViewType(int position) {
         if (position == 0) {
             return TYPE_HEADER;
-        } else if (position == labelList.size() + 1) {
+        } else if (position == labels.size() + 1) {
             return TYPE_FOOTER;
         } else {
             return TYPE_NOR;
@@ -292,7 +266,7 @@ public class EventEditorAdapter
 
     @Override
     public int getItemCount() {
-        return labelList.size() + 2;
+        return labels.size() + 2;
     }
 
     public interface OnEventChangedListener {
@@ -300,7 +274,6 @@ public class EventEditorAdapter
 
         void onKeyRemoved(int key);
     }
-
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         Button startDate;
@@ -322,13 +295,13 @@ public class EventEditorAdapter
     }
 
     static class LabelViewHolder extends RecyclerView.ViewHolder {
-        ImageButton imageButton;
-        Spinner spinner;
+        Spinner icon;
+        Spinner text;
 
         public LabelViewHolder(final View view) {
             super(view);
-            imageButton = (ImageButton) view.findViewById(R.id.edit_label_icon);
-            spinner = (Spinner) view.findViewById(R.id.edit_label_button);
+            icon = (Spinner) view.findViewById(R.id.edit_label_icon);
+            text = (Spinner) view.findViewById(R.id.edit_label_text);
         }
     }
 

@@ -21,7 +21,7 @@ public class DatabaseHelper {
     public static final String TABLE_EVENT = "Event";
     public static final int VERSION = 2;
     private static final String TAG = "DatabaseHelper";
-    public Map<Integer, Label> labelMap = new HashMap<>();
+    public Map<Integer, Label> labelMap = new LinkedHashMap<>();
     public Map<Integer, String> labelNameMap = new HashMap<>();
     SQLiteDatabase database;
     ContentValues values = new ContentValues();
@@ -36,10 +36,11 @@ public class DatabaseHelper {
 
     private void initMap() {
         cursor = database.query("AllLabel", null, null, null, null, null, null);
+        int i = 0;
         if (cursor.moveToFirst()) {
             do {
                 labelMap.put(cursor.getInt(cursor.getColumnIndex("id")),
-                        getLabelByName(cursor.getString(cursor.getColumnIndex("label"))));
+                        getLabel(cursor.getString(cursor.getColumnIndex("label")), cursor.getInt(cursor.getColumnIndex("id")), i++));
                 labelNameMap.put(cursor.getInt(cursor.getColumnIndex("id")),
                         cursor.getString(cursor.getColumnIndex("label")));
             } while (cursor.moveToNext());
@@ -47,8 +48,8 @@ public class DatabaseHelper {
         cursor.close();
     }
 
-    private Label getLabelByName(String tableName) {
-        Label label = new Label();
+    private Label getLabel(String tableName, int id, int position) {
+        Label label = new Label(getLabelIcon(id), tableName, position);
         Cursor cursor = database.query(tableName, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
@@ -72,7 +73,7 @@ public class DatabaseHelper {
         database.insert(tag, null, values);
     }
 
-    public void update(int start, Map<Integer, Integer> map) {
+    public void update(int id, Map<Integer, Integer> map) {
         values.clear();
         for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
             if (entry.getKey() == Event.START) {
@@ -83,7 +84,7 @@ public class DatabaseHelper {
                 values.put(labelNameMap.get(entry.getKey()), entry.getValue());
             }
         }
-        database.update(TABLE_EVENT, values, "start = ?", new String[]{Integer.toString(start)});
+        database.update(TABLE_EVENT, values, "start = ?", new String[]{Integer.toString(id)});
     }
 
     public void update(String label, String before, String after) {
@@ -104,6 +105,28 @@ public class DatabaseHelper {
         database.delete(label, "value  = ?", new String[]{which});
     }
 
+    public Event query(int id) {
+        String where = "id = ? ";
+        String[] whereValues = {Integer.toString(id)};
+        cursor = database.query(TABLE_EVENT, null, where, whereValues, null, null, null);
+        Event event = new Event(id);
+        if (cursor.moveToFirst()) {
+            do {
+                Map<Integer, Integer> map = new LinkedHashMap<>();
+                event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
+                event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
+                for (Map.Entry<Integer, String> entry : labelNameMap.entrySet()) {
+                    if (cursor.getInt(cursor.getColumnIndex(entry.getValue())) != 0) {
+                        map.put(entry.getKey(), cursor.getInt(cursor.getColumnIndex(entry.getValue())));
+                    }
+                }
+                event.setLabelsMap(map);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return event;
+    }
+
     public List<Event> query(int dataMin, int dataMax) {
         String where = "start < ? and start > ?";
         String[] whereValues = {Integer.toString(dataMax), Integer.toString(dataMin)};
@@ -112,7 +135,8 @@ public class DatabaseHelper {
         if (cursor.moveToFirst()) {
             do {
                 Map<Integer, Integer> map = new LinkedHashMap<>();
-                Event event = new Event(cursor.getInt(cursor.getColumnIndex("start")));
+                Event event = new Event(cursor.getInt(cursor.getColumnIndex("id")));
+                event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
                 event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
                 for (Map.Entry<Integer, String> entry : labelNameMap.entrySet()) {
                     if (cursor.getInt(cursor.getColumnIndex(entry.getValue())) != 0) {
@@ -144,4 +168,5 @@ public class DatabaseHelper {
         }
         return icon;
     }
+
 }

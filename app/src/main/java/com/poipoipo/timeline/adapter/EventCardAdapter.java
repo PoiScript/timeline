@@ -3,15 +3,20 @@ package com.poipoipo.timeline.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.poipoipo.timeline.R;
+import com.poipoipo.timeline.data.EditedMessageEvent;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.dialog.EventEditorFragment;
 import com.poipoipo.timeline.ui.MainActivity;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -28,6 +33,7 @@ public class EventCardAdapter
     public EventCardAdapter(List<Event> events, Context context) {
         this.events = events;
         this.context = context;
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -58,10 +64,17 @@ public class EventCardAdapter
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fragment.update(event);
+                fragment.update(event, holder.getAdapterPosition());
                 fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
             }
         });
+    }
+
+    @Subscribe
+    public void onEventEdited(EditedMessageEvent msg) {
+        Log.d(TAG, "onEventEdited: ");
+        events.set(msg.position, events.get(msg.position).editByChangeLog(msg.changeLog));
+        notifyItemChanged(msg.position);
     }
 
     @Override

@@ -23,6 +23,8 @@ import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.dialog.DatePickerFragment;
 import com.poipoipo.timeline.dialog.EventEditorFragment;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -38,6 +40,7 @@ public class FragmentTimeline extends Fragment
     private MainActivity mainActivity;
     private Calendar calendar = Calendar.getInstance();
     private DialogFragment datePicker;
+    private EventCardAdapter adapter;
 
     @Nullable
     @Override
@@ -60,7 +63,7 @@ public class FragmentTimeline extends Fragment
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mainActivity);
         recyclerView.setLayoutManager(layoutManager);
-        EventCardAdapter adapter = new EventCardAdapter(mainActivity.databaseHelper.query(todayTimestamp, todayTimestamp + 24 * 60 * 60), mainActivity);
+        adapter = new EventCardAdapter(mainActivity.databaseHelper.query(todayTimestamp, todayTimestamp + 24 * 60 * 60), mainActivity);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -99,6 +102,12 @@ public class FragmentTimeline extends Fragment
         mainActivity.databaseHelper.insertEvent(TimestampUtil.getCurrentTimestamp());
         Toast.makeText(mainActivity, "Event Created", Toast.LENGTH_SHORT).show();
         return true;
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(adapter);
+        super.onStop();
     }
 
     @Override

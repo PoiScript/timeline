@@ -3,18 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="72dp">
 
-    <ImageButton
+    <Spinner
         android:id="@+id/edit_label_icon"
-        style="@style/AppTheme.Button"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:contentDescription="Edit Label Type"
+        android:layout_width="75dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
         android:padding="@dimen/edit_icon_padding" />
 
     <Spinner
-        android:id="@+id/edit_label_button"
+        android:id="@+id/edit_label_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="start|center_vertical"
         android:textAllCaps="false" />
+
 </LinearLayout>

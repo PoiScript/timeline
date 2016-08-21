@@ -16,6 +16,7 @@ import android.view.View;
 
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventEditorAdapter;
+import com.poipoipo.timeline.data.EditedMessageEvent;
 import com.poipoipo.timeline.data.Event;
 
 import org.greenrobot.eventbus.EventBus;
@@ -56,10 +57,12 @@ public class EventEditorFragment extends DialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        changeLog.clear();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         event = (Event) getArguments().getSerializable("event");
         adapter = new EventEditorAdapter(event, getActivity(), this);
         recyclerView.setAdapter(adapter);
+//        recyclerView.addItemDecoration(new MyDecoration(getActivity(), MyDecoration.VERTICAL_LIST));
         toolbar.setTitle("Edit Event Info");
         toolbar.inflateMenu(R.menu.menu_event_editor);
         toolbar.setOnMenuItemClickListener(this);
@@ -67,7 +70,9 @@ public class EventEditorFragment extends DialogFragment
                 .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mListener.onPositiveClick(event.getStart(), changeLog);
+                        mListener.onPositiveClick(event.getId(), changeLog);
+//                        changeLog.put(Event.POSITION, getArguments().getInt("position"));
+                        EventBus.getDefault().post(new EditedMessageEvent(getArguments().getInt("position"), changeLog));
                     }
                 })
                 .setNegativeButton("CANCEL", null);
@@ -79,12 +84,14 @@ public class EventEditorFragment extends DialogFragment
         return false;
     }
 
-    public void update(Event event) {
+    public void update(Event event, int position) {
         if (getArguments() != null) {
             getArguments().putSerializable("event", event);
+            getArguments().putInt("position", position);
         } else {
             Bundle args = new Bundle();
             args.putSerializable("event", event);
+            args.putInt("position", position);
             setArguments(args);
         }
     }
@@ -111,26 +118,22 @@ public class EventEditorFragment extends DialogFragment
 
     @Override
     public void onKeyRemoved(int key) {
-        if (errorSnackbar == null) {
-            errorSnackbar = Snackbar.make(recyclerView, R.string.editor_error_time, Snackbar.LENGTH_INDEFINITE);
+        if (changeLog.containsKey(key)) {
+            if (errorSnackbar == null) {
+                errorSnackbar = Snackbar.make(recyclerView, R.string.editor_error_time, Snackbar.LENGTH_INDEFINITE);
+            }
+            if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_TIME) {
+                errorSnackbar.setText(R.string.editor_error_label);
+            }
+            if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_LABEL) {
+                errorSnackbar.setText(R.string.editor_error_time);
+            }
+            changeLog.remove(key);
+            if (!changeLog.containsKey(Event.ERROR_LABEL) && !changeLog.containsKey(Event.ERROR_TIME) && errorSnackbar.isShown()) {
+                errorSnackbar.dismiss();
+            }
+            Log.d(TAG, "onKeyRemoved: remove key = " + key);
         }
-        if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_TIME) {
-            errorSnackbar.setText(R.string.editor_error_label);
-        }
-        if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_LABEL) {
-            errorSnackbar.setText(R.string.editor_error_time);
-        }
-        changeLog.remove(key);
-        if (!changeLog.containsKey(Event.ERROR_LABEL) && !changeLog.containsKey(Event.ERROR_TIME) && errorSnackbar.isShown()) {
-            errorSnackbar.dismiss();
-        }
-        Log.d(TAG, "onKeyRemoved: remove key = " + key);
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        changeLog.clear();
-        super.onDismiss(dialog);
     }
 
     @Override

@@ -112,7 +112,6 @@ public class EventEditorAdapter
                         notifyItemChanged(viewHolder.getAdapterPosition());
                     }
                 }
-
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
 

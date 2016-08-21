@@ -47,7 +47,7 @@ public class EventCardAdapter
     public void onBindViewHolder(final EventsViewHolder holder, int position) {
         final Event event = events.get(holder.getAdapterPosition());
         if (event.hasTitle && event.hasSubtitle) {
-            holder.title.setText(event.getTitle() + ": " + event.getSubtitle());
+            holder.title.setText(new StringBuilder().append(event.getTitle()).append(": ").append(event.getSubtitle()));
         } else if (event.hasTitle) {
             holder.title.setText(event.getTitle());
         } else if (event.hasSubtitle) {
@@ -56,7 +56,7 @@ public class EventCardAdapter
             holder.title.setText(R.string.dialog_no_title);
         }
         if (event.hasEndTime) {
-            holder.time.setText(format.format(event.getStart() * 1000L) + " - " + format.format(event.getEnd() * 1000L));
+            holder.time.setText(new StringBuilder(format.format(event.getStart() * 1000L)).append(" - ").append(format.format(event.getEnd() * 1000L)));
         } else {
             holder.time.setText(format.format(event.getStart() * 1000L));
         }

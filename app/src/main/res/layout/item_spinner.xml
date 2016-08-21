@@ -6,7 +6,8 @@
     <ImageView
         android:id="@+id/spinner_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/editor_label_icon" />
 
     <TextView
         android:id="@+id/spinner_text"

@@ -20,11 +20,16 @@
     <string name="dialog_edit">Edit</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <string name="editor_start_to_current">Set Start Time To Current.</string>
+    <string name="editor_end_to_current">Set End Time To Current.</string>
+    <string name="editor_label_icon_selector">Label Icon Selector</string>
+    <string name="editor_label_icon">Label Icon</string>
     <string name="editor_attach_label">Attach New Label</string>
     <string name="editor_error_time">The start time should be before the end time of the event.</string>
     <string name="editor_error_label">Empty Label Exits.</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_app_icon">App Icon</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="title_activity_edit">EditActivity</string>

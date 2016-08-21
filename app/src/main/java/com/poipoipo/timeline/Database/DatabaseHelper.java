@@ -163,8 +163,6 @@ public class DatabaseHelper {
             case 3:
                 icon = R.drawable.ic_location;
                 break;
-            case Event.ERROR_LABEL:
-                icon = R.drawable.ic_touch_app_black_24dp;
         }
         return icon;
     }

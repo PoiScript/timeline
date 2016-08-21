@@ -10,7 +10,6 @@ public class Event implements Serializable {
     public static final int START = 0;
     public static final int END = -1;
     public static final int ERROR_TIME = -2;
-    public static final int ERROR_LABEL = -3;
     public boolean hasTitle = false;
     public boolean hasEndTime = false;
     public boolean hasSubtitle = false;

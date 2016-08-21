@@ -51,8 +51,7 @@ public class EventEditorAdapter
     private FragmentManager manager;
     private DatabaseHelper databaseHelper;
     private HeaderViewHolder headerViewHolder;
-    private int key;
-    private int value;
+    private boolean hadError;
     private SpinnerAdapter adapter;
 
     public EventEditorAdapter(Event event, Context context, OnEventChangedListener mListener) {
@@ -82,13 +81,15 @@ public class EventEditorAdapter
             viewHolder.icon.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if (++i == viewHolder.icon.getAdapter().getCount()) {
+                    if (i == viewHolder.icon.getAdapter().getCount()) {
                         labels.remove(key);
                         notifyItemRemoved(viewHolder.getAdapterPosition());
-                    } else if (i != key) {
+                    } else if (++i != key) {
+                        Log.d(TAG, "onItemSelected: ");
                         mListener.onEventChanged(i, 1);
                         labels.put(i, 1);
                         labels.remove(key);
+                        setAdapter();
                         notifyDataSetChanged();
                     }
                 }
@@ -125,8 +126,8 @@ public class EventEditorAdapter
             headerViewHolder.endTime.setOnClickListener(this);
             headerViewHolder.startCurrent.setOnClickListener(this);
             headerViewHolder.endCurrent.setOnClickListener(this);
-            updateTime(Event.START);
-            updateTime(Event.END);
+            setTime(true, true, true);
+            setTime(false, true, true);
         } else {
             ((FooterViewHolder) holder).button.setOnClickListener(this);
         }
@@ -135,9 +136,9 @@ public class EventEditorAdapter
     private void setAdapter() {
         List<String> text = new ArrayList<>();
         List<Integer> icon = new ArrayList<>();
-        for (Label label : databaseHelper.labelMap.values()) {
-            text.add(label.value);
-            icon.add(label.icon);
+        for (Map.Entry<Integer, Label> entry : databaseHelper.labelMap.entrySet()) {
+            text.add(entry.getValue().value);
+            icon.add(entry.getValue().icon);
         }
         text.add("Remove");
         icon.add(R.drawable.ic_remove);
@@ -153,7 +154,7 @@ public class EventEditorAdapter
                 headerViewHolder.endDate.setText(dateFormat.format(endCalendar.getTime()));
                 headerViewHolder.endTime.setText(timeFormat.format(endCalendar.getTime()));
         }
-        if (startCalendar.after(endCalendar) || endCalendar.equals(startCalendar)) {
+        if (startCalendar.after(endCalendar) || endCalendar.compareTo(startCalendar) <= 1) {
             headerViewHolder.endDate.setTextColor(Color.RED);
             headerViewHolder.endTime.setTextColor(Color.RED);
             mListener.onEventChanged(Event.ERROR_TIME, 0);
@@ -161,6 +162,37 @@ public class EventEditorAdapter
             headerViewHolder.endDate.setTextColor(Color.BLACK);
             headerViewHolder.endTime.setTextColor(Color.BLACK);
             mListener.onKeyRemoved(Event.ERROR_TIME);
+        }
+    }
+
+    private void setTime(boolean start, boolean date, boolean time) {
+        if (start) {
+            if (date) {
+                headerViewHolder.startDate.setText(dateFormat.format(startCalendar.getTime()));
+            }
+            if (time) {
+                headerViewHolder.startTime.setText(timeFormat.format(startCalendar.getTime()));
+            }
+        } else {
+            if (date) {
+                headerViewHolder.endDate.setText(dateFormat.format(endCalendar.getTime()));
+            }
+            if (time) {
+                headerViewHolder.endTime.setText(timeFormat.format(endCalendar.getTime()));
+            }
+        }
+    }
+
+    private void setFoundError(boolean foundError) {
+        if (hadError && !foundError) {
+            headerViewHolder.endDate.setTextColor(Color.BLACK);
+            headerViewHolder.endTime.setTextColor(Color.BLACK);
+            hadError = false;
+        }
+        if (!hadError && foundError) {
+            headerViewHolder.endDate.setTextColor(Color.RED);
+            headerViewHolder.endTime.setTextColor(Color.RED);
+            hadError = true;
         }
     }
 
@@ -180,14 +212,26 @@ public class EventEditorAdapter
                 TimePickerFragment.newInstance(Event.END, endCalendar.get(Calendar.HOUR), endCalendar.get(Calendar.MINUTE)).show(manager, "TimePicker");
                 break;
             case R.id.event_editor_start_current:
+                if (endCalendar.before(Calendar.getInstance())) {
+                    setFoundError(true);
+                    mListener.onEventChanged(Event.ERROR_TIME, TimestampUtil.getTimestampByCalendar(startCalendar));
+                } else {
+                    setFoundError(false);
+                }
                 startCalendar = Calendar.getInstance();
-                updateTime(Event.START);
                 mListener.onEventChanged(Event.START, TimestampUtil.getTimestampByCalendar(startCalendar));
+                setTime(true, true, true);
                 break;
             case R.id.event_editor_end_current:
+                if (endCalendar.before(Calendar.getInstance())) {
+                    setFoundError(true);
+                    mListener.onEventChanged(Event.ERROR_TIME, TimestampUtil.getTimestampByCalendar(endCalendar));
+                } else {
+                    setFoundError(false);
+                }
                 endCalendar = Calendar.getInstance();
-                updateTime(Event.END);
                 mListener.onEventChanged(Event.END, TimestampUtil.getTimestampByCalendar(endCalendar));
+                setTime(false, true, true);
                 break;
             case R.id.event_editor_add_label:
                 if (labels.size() < databaseHelper.labelMap.size()) {
@@ -204,19 +248,47 @@ public class EventEditorAdapter
     }
 
     @Subscribe
+    public void onResetMessageEvent(Integer timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp * 1000L);
+        if (calendar.after(startCalendar)) {
+            endCalendar = calendar;
+            setTime(false, true, true);
+        } else {
+            startCalendar = calendar;
+            setTime(true, true, true);
+        }
+        setFoundError(false);
+    }
+
+    @Subscribe
     public void onTimeMessageEvent(TimeMessageEvent event) {
         switch (event.type) {
             case Event.START:
+                Calendar temp = startCalendar;
                 startCalendar.set(Calendar.HOUR, event.hour);
                 startCalendar.set(Calendar.MINUTE, event.minute);
+                if (startCalendar.after(endCalendar)) {
+                    setFoundError(true);
+                    mListener.onEventChanged(Event.ERROR_TIME, TimestampUtil.getTimestampByCalendar(temp));
+                } else {
+                    setFoundError(false);
+                }
                 mListener.onEventChanged(Event.START, TimestampUtil.getTimestampByCalendar(startCalendar));
-                updateTime(event.type);
+                setTime(true, false, true);
                 break;
             case Event.END:
+                Calendar anotherTemp = endCalendar;
                 endCalendar.set(Calendar.HOUR, event.hour);
                 endCalendar.set(Calendar.MINUTE, event.minute);
+                if (startCalendar.after(endCalendar)) {
+                    setFoundError(true);
+                    mListener.onEventChanged(Event.ERROR_TIME, TimestampUtil.getTimestampByCalendar(anotherTemp));
+                } else {
+                    setFoundError(false);
+                }
                 mListener.onEventChanged(Event.END, TimestampUtil.getTimestampByCalendar(endCalendar));
-                updateTime(event.type);
+                setTime(false, false, true);
         }
     }
 
@@ -224,18 +296,32 @@ public class EventEditorAdapter
     public void onDateMessageEvent(DateMessageEvent event) {
         switch (event.type) {
             case Event.START:
+                Calendar temp = startCalendar;
                 startCalendar.set(Calendar.YEAR, event.year);
                 startCalendar.set(Calendar.MONTH, event.month);
                 startCalendar.set(Calendar.DAY_OF_MONTH, event.day);
+                if (startCalendar.after(endCalendar)) {
+                    setFoundError(true);
+                    mListener.onEventChanged(Event.ERROR_TIME, TimestampUtil.getTimestampByCalendar(temp));
+                } else {
+                    setFoundError(false);
+                }
                 mListener.onEventChanged(Event.START, TimestampUtil.getTimestampByCalendar(startCalendar));
-                updateTime(event.type);
+                setTime(true, false, true);
                 break;
             case Event.END:
+                Calendar anotherTemp = endCalendar;
                 endCalendar.set(Calendar.YEAR, event.year);
                 endCalendar.set(Calendar.MONTH, event.month);
                 endCalendar.set(Calendar.DAY_OF_MONTH, event.day);
+                if (startCalendar.after(endCalendar)) {
+                    setFoundError(true);
+                    mListener.onEventChanged(Event.ERROR_TIME, TimestampUtil.getTimestampByCalendar(anotherTemp));
+                } else {
+                    setFoundError(false);
+                }
                 mListener.onEventChanged(Event.END, TimestampUtil.getTimestampByCalendar(endCalendar));
-                updateTime(event.type);
+                setTime(false, false, true);
         }
     }
 

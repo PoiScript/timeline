@@ -34,24 +34,4 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         return convertView;
     }
 
-    @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        return super.getDropDownView(position, convertView, parent);
-    }
-
-    //    @Override
-//    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-//        if (convertView == null) {
-//            convertView = LayoutInflater.from(context).inflate(R.layout.item_spinner, parent, false);
-//        }
-//
-//
-//
-//        TextView text = (TextView) convertView.findViewById(R.id.spinner_text);
-//        ImageView image = (ImageView) convertView.findViewById(R.id.spinner_image);
-//
-//        text.setText(texts.get(position));
-//        image.setImageResource(images.get(position));
-//        return convertView;
-//    }
 }

@@ -16,6 +16,7 @@ public class Label {
     public int icon = 0;
     public int position;
     int i = 0;
+    int removeCount = 0;
 
     public Label(int icon, String value, int position) {
         this.value = value;

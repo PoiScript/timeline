@@ -103,35 +103,48 @@ public class EventEditorFragment extends DialogFragment
     }
 
     @Override
-    public void onEventChanged(int key, int value) {
+    public void onEventChanged(int key, final int value) {
         Log.d(TAG, "onEventChanged: get key = " + key + " value = " + value);
         changeLog.put(key, value);
         if (errorSnackbar == null) {
             errorSnackbar = Snackbar.make(recyclerView, R.string.editor_error_time, Snackbar.LENGTH_INDEFINITE);
         }
-        if ((changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_TIME) || (changeLog.containsKey(Event.ERROR_TIME) && !errorSnackbar.isShown())) {
-            errorSnackbar.setText(R.string.editor_error_time).show();
-        } else if ((changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_LABEL) || (changeLog.containsKey(Event.ERROR_LABEL) && !errorSnackbar.isShown())) {
-            errorSnackbar.setText(R.string.editor_error_label).show();
+        if (changeLog.containsKey(Event.ERROR_TIME)) {
+            errorSnackbar.setAction("Reset", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    EventBus.getDefault().post(changeLog.get(Event.ERROR_TIME));
+                    errorSnackbar.dismiss();
+                    changeLog.remove(Event.ERROR_TIME);
+                }
+            }).show();
         }
+//        if ((changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_TIME) || (changeLog.containsKey(Event.ERROR_TIME) && !errorSnackbar.isShown())) {
+//            errorSnackbar.setText(R.string.editor_error_time).show();
+//        } else if ((changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_LABEL) || (changeLog.containsKey(Event.ERROR_LABEL) && !errorSnackbar.isShown())) {
+//            errorSnackbar.setText(R.string.editor_error_label).show();
+//        }
     }
 
     @Override
     public void onKeyRemoved(int key) {
+        if (errorSnackbar == null) {
+            errorSnackbar = Snackbar.make(recyclerView, R.string.editor_error_time, Snackbar.LENGTH_INDEFINITE);
+        }
         if (changeLog.containsKey(key)) {
-            if (errorSnackbar == null) {
-                errorSnackbar = Snackbar.make(recyclerView, R.string.editor_error_time, Snackbar.LENGTH_INDEFINITE);
-            }
-            if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_TIME) {
-                errorSnackbar.setText(R.string.editor_error_label);
-            }
-            if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_LABEL) {
-                errorSnackbar.setText(R.string.editor_error_time);
-            }
+//            if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_LABEL) && key == Event.ERROR_TIME) {
+//                errorSnackbar.setText(R.string.editor_error_label);
+//            }
+//            if (errorSnackbar.isShown() && changeLog.containsKey(Event.ERROR_TIME) && key == Event.ERROR_LABEL) {
+//                errorSnackbar.setText(R.string.editor_error_time);
+//            }
             changeLog.remove(key);
-            if (!changeLog.containsKey(Event.ERROR_LABEL) && !changeLog.containsKey(Event.ERROR_TIME) && errorSnackbar.isShown()) {
+            if (!changeLog.containsKey(Event.ERROR_TIME)) {
                 errorSnackbar.dismiss();
             }
+//            if (!changeLog.containsKey(Event.ERROR_LABEL) && !changeLog.containsKey(Event.ERROR_TIME) && errorSnackbar.isShown()) {
+//                errorSnackbar.dismiss();
+//            }
             Log.d(TAG, "onKeyRemoved: remove key = " + key);
         }
     }

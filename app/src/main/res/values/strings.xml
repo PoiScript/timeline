@@ -21,7 +21,7 @@
     <string name="dialog_cancel">Cancel</string>
 
     <string name="editor_attach_label">Attach New Label</string>
-    <string name="editor_error_time">The start time need to be before the end time of the event.</string>
+    <string name="editor_error_time">The start time should be before the end time of the event.</string>
     <string name="editor_error_label">Empty Label Exits.</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

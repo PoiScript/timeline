@@ -25,9 +25,9 @@ import java.util.Locale;
 public class EventCardAdapter
         extends RecyclerView.Adapter<EventCardAdapter.EventsViewHolder> {
     private static final String TAG = "EventCardAdapter";
-    private SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private List<Event> events;
-    private Context context;
+    private final SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final List<Event> events;
+    private final Context context;
     private EventEditorFragment fragment;
 
     public EventCardAdapter(List<Event> events, Context context) {
@@ -83,10 +83,10 @@ public class EventCardAdapter
     }
 
     static class EventsViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
-        TextView title;
-        TextView time;
-        TextView location;
+        final CardView cardView;
+        final TextView title;
+        final TextView time;
+        final TextView location;
 
         public EventsViewHolder(final View view) {
             super(view);

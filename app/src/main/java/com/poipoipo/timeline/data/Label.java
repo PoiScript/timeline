@@ -1,22 +1,20 @@
 package com.poipoipo.timeline.data;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import android.util.ArrayMap;
 
 public class Label {
     public static final int TITLE = 0;
     public static final int SUBTITLE = 1;
     public static final int LOCATION = 2;
     private static final String TAG = "Label";
-    public Map<Integer, Integer> index = new LinkedHashMap<>();
-    public Map<Integer, String> name = new LinkedHashMap<>();
-    public Map<Integer, Integer> usage = new LinkedHashMap<>();
-    public Map<Integer, Integer> id = new LinkedHashMap<>();
-    public String value;
+    public final ArrayMap<Integer, Integer> index = new ArrayMap<>();
+    public final ArrayMap<Integer, String> name = new ArrayMap<>();
+    public final ArrayMap<Integer, Integer> usage = new ArrayMap<>();
+    public final ArrayMap<Integer, Integer> id = new ArrayMap<>();
+    public final String value;
+    public final int position;
     public int icon = 0;
-    public int position;
     int i = 0;
-    int removeCount = 0;
 
     public Label(int icon, String value, int position) {
         this.value = value;

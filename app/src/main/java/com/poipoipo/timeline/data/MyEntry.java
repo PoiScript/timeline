@@ -2,7 +2,7 @@ package com.poipoipo.timeline.data;
 
 import java.util.Map;
 
-public class MyEntry<K, V> implements Map.Entry<K, V> {
+class MyEntry<K, V> implements Map.Entry<K, V> {
     private final K key;
     private V value;
 

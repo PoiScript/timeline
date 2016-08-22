@@ -4,31 +4,31 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseOpenHelper extends SQLiteOpenHelper {
+class DatabaseOpenHelper extends SQLiteOpenHelper {
 
-    public static final String CREATE_EVENT = "create table Event ("
+    private static final String CREATE_EVENT = "create table Event ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "start INTEGER, "
             + "end INTEGER)";
 
-    public static final String CREATE_ALL_LABEL = "create table AllLabel ("
+    private static final String CREATE_ALL_LABEL = "create table AllLabel ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "label TEXT)";
 
-    public static final String CREATE_NEW_LABEL_PART_1 = "create table ";
-    public static final String CREATE_NEW_LABEL_PART_2 = " ("
+    private static final String CREATE_NEW_LABEL_PART_1 = "create table ";
+    private static final String CREATE_NEW_LABEL_PART_2 = " ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "parent INTEGER, "
             + "value TEXT, "
             + "usage INTEGER)";
-    public static final String EVENT_ADD_COLUMN_PART_1 = "alter table Event add column ";
-    public static final String EVENT_ADD_COLUMN_PART_2 = " integer";
+    private static final String EVENT_ADD_COLUMN_PART_1 = "alter table Event add column ";
+    private static final String EVENT_ADD_COLUMN_PART_2 = " integer";
 
     private static final String[] defaultTitle = {"Course", "Breakfast", "Lunch", "Dinner", "Brunch", "Cook"};
     private static final String[] defaultCourseSubtitle = {"Further Mathematics", "Linear Algebra", "Discrete Mathematics", "Digital Signal Process", "Probability And Statistics"};
     private static final String[] defaultLabels = {"Title", "Subtitle", "Location"};
 
-    Context mContext;
+    private final Context mContext;
 
     public DatabaseOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);

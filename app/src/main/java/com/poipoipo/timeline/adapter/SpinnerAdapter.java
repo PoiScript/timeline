@@ -11,10 +11,10 @@ import com.poipoipo.timeline.R;
 
 import java.util.List;
 
-public class SpinnerAdapter extends ArrayAdapter<String> {
-    Context context;
-    List<String> texts;
-    List<Integer> images;
+class SpinnerAdapter extends ArrayAdapter<String> {
+    private final Context context;
+    private final List<String> texts;
+    private final List<Integer> images;
 
     public SpinnerAdapter(Context context, List<String> texts, List<Integer> images) {
         super(context, android.R.layout.simple_spinner_dropdown_item, texts);

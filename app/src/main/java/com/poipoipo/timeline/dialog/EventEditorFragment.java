@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,17 +22,16 @@ import com.poipoipo.timeline.data.Event;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class EventEditorFragment extends DialogFragment
         implements Toolbar.OnMenuItemClickListener,
         EventEditorAdapter.OnEventChangedListener {
     private static final String TAG = "EventEditorFragment";
-    View view;
-    Event event;
-    Toolbar toolbar;
-    private Map<Integer, Integer> changeLog = new HashMap<>();
+    private final ArrayMap<Integer, Integer> changeLog = new ArrayMap<>();
+    private View view;
+    private Event event;
+    private Toolbar toolbar;
     private EventEditorListener mListener;
     private EventEditorAdapter adapter;
     private RecyclerView recyclerView;

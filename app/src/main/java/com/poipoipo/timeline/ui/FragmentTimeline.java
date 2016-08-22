@@ -1,6 +1,5 @@
 package com.poipoipo.timeline.ui;
 
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class FragmentTimeline extends Fragment
@@ -35,12 +35,12 @@ public class FragmentTimeline extends Fragment
         Toolbar.OnMenuItemClickListener,
         DatePickerFragment.OnDateSetListener {
     private static final String TAG = "FragmentTimeline";
-    EventEditorFragment eventEditor;
-    private SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
+    private final SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private MainActivity mainActivity;
-    private Calendar calendar = Calendar.getInstance();
-    private DialogFragment datePicker;
+    private Button editDate;
     private EventCardAdapter adapter;
+    private List<Event> events;
+    private Calendar shownDate = Calendar.getInstance();
 
     @Nullable
     @Override
@@ -51,57 +51,67 @@ public class FragmentTimeline extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mainActivity = (MainActivity) getActivity();
-        int todayTimestamp = TimestampUtil.getTodayTimestamp();
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.timeline_toolbar);
         toolbar.inflateMenu(R.menu.menu_timeline);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener(this);
         toolbar.setOnMenuItemClickListener(this);
-        Button editDate = (Button) view.findViewById(R.id.toolbar_date);
+        editDate = (Button) view.findViewById(R.id.toolbar_date);
         editDate.setOnClickListener(this);
-        editDate.setText(format.format(TimestampUtil.getTodayTimestamp() * 1000L));
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mainActivity);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new EventCardAdapter(mainActivity.databaseHelper.query(todayTimestamp, todayTimestamp + 24 * 60 * 60), mainActivity);
+        initAdapterAndButton();
+        adapter = new EventCardAdapter(events, mainActivity);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(this);
         fab.setOnLongClickListener(this);
-        Button button = (Button) toolbar.findViewById(R.id.toolbar_date);
-        button.setOnClickListener(this);
-        datePicker = DatePickerFragment.newInstance(2, 3, 3, 3);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_date:
+                DatePickerFragment datePicker = DatePickerFragment.newInstance(0, shownDate.get(Calendar.YEAR), shownDate.get(Calendar.MONTH), shownDate.get(Calendar.DAY_OF_MONTH));
                 datePicker.setTargetFragment(this, 0);
                 datePicker.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:
-                eventEditor = EventEditorFragment.newInstance(new Event(TimestampUtil.getCurrentTimestamp()));
+                EventEditorFragment eventEditor = EventEditorFragment.newInstance(new Event(TimestampUtil.getCurrentTimestamp(Calendar.getInstance())));
                 eventEditor.show(getActivity().getFragmentManager(), "eventEditor");
                 break;
             default:
         }
     }
 
-    @Override
-    public void onDateSet(int type, int year, int month, int day) {
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, day);
-        Toast.makeText(getActivity(), "type = " + type + " year = " + year + " month = " + month + " day = " + day, Toast.LENGTH_SHORT).show();
+    private void initAdapterAndButton() {
+        editDate.setText(format.format(shownDate.getTime()));
+        events = mainActivity.databaseHelper.query(TimestampUtil.getDayTimestampByCalendar(shownDate), TimestampUtil.getDayTimestampByCalendar(shownDate) + 24 * 60 * 60);
     }
 
     @Override
     public boolean onLongClick(View view) {
-        mainActivity.databaseHelper.insertEvent(TimestampUtil.getCurrentTimestamp());
+        Calendar calendar = Calendar.getInstance();
+        mainActivity.databaseHelper.insertEvent(TimestampUtil.getCurrentTimestamp(calendar));
+        if (shownDate.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
+                && shownDate.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
+                && shownDate.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH)) {
+            events.add(mainActivity.databaseHelper.queryLastEvent());
+            adapter.notifyItemInserted(events.size());
+        }
         Toast.makeText(mainActivity, "Event Created", Toast.LENGTH_SHORT).show();
         return true;
+    }
+
+    @Override
+    public void onDateSet(int type, int year, int month, int day) {
+        shownDate.set(Calendar.YEAR, year);
+        shownDate.set(Calendar.MONTH, month);
+        shownDate.set(Calendar.DAY_OF_MONTH, day);
+        initAdapterAndButton();
+        adapter.notifyDataSetChanged();
     }
 
     @Override

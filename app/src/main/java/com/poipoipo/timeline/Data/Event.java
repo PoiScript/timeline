@@ -1,5 +1,8 @@
 package com.poipoipo.timeline.data;
 
+
+import android.util.ArrayMap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +13,10 @@ public class Event implements Serializable {
     public static final int START = 0;
     public static final int END = -1;
     public static final int ERROR_TIME = -2;
-    public boolean hasTitle = false;
-    public boolean hasEndTime = false;
-    public boolean hasSubtitle = false;
+    public final boolean hasTitle = false;
+    public final boolean hasEndTime = false;
+    public final boolean hasSubtitle = false;
+    private final List<Map.Entry<Integer, Integer>> labelList = new ArrayList<>();
     private String title;
     private String subtitle;
     private String location;
@@ -20,20 +24,23 @@ public class Event implements Serializable {
     private int end;
     private int id;
     private Map<Integer, Integer> labelsMap;
-    private List<Map.Entry<Integer, Integer>> labelList = new ArrayList<>();
+    private ArrayMap<Integer, Integer> labelArray;
 
     public Event(int id) {
         this.id = id;
     }
 
-    public Map<Integer, Integer> getLabelsMap() {
-        return labelsMap;
+    public ArrayMap<Integer, Integer> getLabelArray() {
+        if (labelArray == null) {
+            return new ArrayMap<>();
+        } else {
+            return labelArray;
+        }
     }
 
-    public void setLabelsMap(Map<Integer, Integer> labelsMap) {
-        this.labelsMap = labelsMap;
+    public void setLabelArray(ArrayMap<Integer, Integer> labelArray) {
+        this.labelArray = labelArray;
     }
-
     public Event editByChangeLog(Map<Integer, Integer> map) {
         for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
             if (entry.getKey() == START) {

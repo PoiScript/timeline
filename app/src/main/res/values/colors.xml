@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="bole_blue">#5484ed</color>
-    <color name="blue">#A4BDFC</color>
-    <color name="turquoise">#46d6db</color>
-    <color name="green">#7ae7bf</color>
-    <color name="bold_green">#51b749</color>
-    <color name="yellow">#fbd75b</color>
-    <color name="orange">#ffb878</color>
-    <color name="red">#ff887c</color>
     <color name="bold_red">#dc2127</color>
-    <color name="purple">#dbadff</color>
-    <color name="gray">#e1e1e1</color>
     <color name="white">#ffffff</color>
 </resources>

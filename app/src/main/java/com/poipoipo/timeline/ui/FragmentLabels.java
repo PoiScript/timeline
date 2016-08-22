@@ -12,7 +12,7 @@ import com.poipoipo.timeline.data.Label;
 
 public class FragmentLabels extends Fragment {
 
-    public static final String LABEL_TYPE = "type";
+    private static final String LABEL_TYPE = "type";
     private int type;
 
 

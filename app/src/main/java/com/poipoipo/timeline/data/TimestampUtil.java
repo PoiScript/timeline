@@ -17,8 +17,8 @@ public class TimestampUtil {
         return timestamp.intValue();
     }
 
-    public static int getCurrentTimestamp() {
-        Long timestamp = Calendar.getInstance().getTimeInMillis() / 1000;
+    public static int getCurrentTimestamp(Calendar calendar) {
+        Long timestamp = calendar.getTimeInMillis() / 1000;
         return timestamp.intValue();
     }
 

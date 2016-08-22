@@ -13,8 +13,8 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
     public static final int[] ATRR = new int[]{android.R.attr.listDivider};
-    Context mContext;
-    private Drawable mDivider;
+    final Context mContext;
+    private final Drawable mDivider;
     private int mOrientation;
 
     public MyDecoration(Context context, int orientation) {
@@ -36,14 +36,14 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         if (mOrientation == HORIZONTAL_LIST) {
-            drawVerticalLine(c, parent, state);
+            drawVerticalLine(c, parent);
         } else {
-            drawHorizontalLine(c, parent, state);
+            drawHorizontalLine(c, parent);
         }
     }
 
     //画横线, 这里的parent其实是显示在屏幕显示的这部分
-    public void drawHorizontalLine(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void drawHorizontalLine(Canvas c, RecyclerView parent) {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
         final int childCount = parent.getChildCount();
@@ -61,7 +61,7 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
     }
 
     //画竖线
-    public void drawVerticalLine(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void drawVerticalLine(Canvas c, RecyclerView parent) {
         int top = parent.getPaddingTop();
         int bottom = parent.getHeight() - parent.getPaddingBottom();
         final int childCount = parent.getChildCount();

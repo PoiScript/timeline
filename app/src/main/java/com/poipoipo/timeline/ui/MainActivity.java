@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +16,6 @@ import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.database.DatabaseHelper;
 import com.poipoipo.timeline.dialog.EventEditorFragment;
 
@@ -23,10 +23,13 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventEditorFragment.EventEditorListener {
-    public static final int MESSAGE_DRAWER = 0, MESSAGE_CREATE = 1, MESSAGE_QUICK_CREATE = 2, MESSAGE_DIALOG_DETAIL = 3;
+    public static final int MESSAGE_DIALOG_DETAIL = 3;
+    private static final int MESSAGE_DRAWER = 0;
+    private static final int MESSAGE_CREATE = 1;
+    private static final int MESSAGE_QUICK_CREATE = 2;
     private static final String TAG = "MainActivity";
     public DatabaseHelper databaseHelper;
-    FragmentManager manager;
+    private FragmentManager manager;
     private DrawerLayout drawerLayout;
     public final Handler handler = new Handler() {
         @Override
@@ -34,12 +37,6 @@ public class MainActivity extends AppCompatActivity
             switch (msg.what) {
                 case MESSAGE_DRAWER:
                     drawerLayout.openDrawer(GravityCompat.START);
-                    break;
-                case MESSAGE_CREATE:
-                    break;
-                case MESSAGE_QUICK_CREATE:
-                    databaseHelper.insertEvent(TimestampUtil.getCurrentTimestamp());
-                    Toast.makeText(getApplicationContext(), "Event Created", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -74,8 +71,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        Bundle args = new Bundle();
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_timeline:
                 fragment = new FragmentTimeline();

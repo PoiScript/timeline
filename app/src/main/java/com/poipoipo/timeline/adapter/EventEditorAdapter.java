@@ -77,8 +77,6 @@ public class EventEditorAdapter
             final int key = map.keyAt(position - 1);
             final int value = map.valueAt(position - 1);
             final Label label = databaseHelper.map.get(key);
-            Log.d(TAG, "onBindViewHolder: key = " + key);
-            Log.d(TAG, "onBindViewHolder: value = " + value);
             viewHolder.icon.setAdapter(adapter);
             viewHolder.icon.setSelection(label.position);
             viewHolder.icon.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -150,26 +148,6 @@ public class EventEditorAdapter
         text.add("Remove");
         icon.add(R.drawable.ic_remove);
         adapter = new SpinnerAdapter(context, text, icon);
-    }
-
-    private void updateTime(int type) {
-        switch (type) {
-            case Event.START:
-                headerViewHolder.startDate.setText(dateFormat.format(startCalendar.getTime()));
-                headerViewHolder.startTime.setText(timeFormat.format(startCalendar.getTime()));
-            case Event.END:
-                headerViewHolder.endDate.setText(dateFormat.format(endCalendar.getTime()));
-                headerViewHolder.endTime.setText(timeFormat.format(endCalendar.getTime()));
-        }
-        if (startCalendar.after(endCalendar) || endCalendar.compareTo(startCalendar) <= 1) {
-            headerViewHolder.endDate.setTextColor(Color.RED);
-            headerViewHolder.endTime.setTextColor(Color.RED);
-            mListener.onEventChanged(Event.ERROR_TIME, 0);
-        } else {
-            headerViewHolder.endDate.setTextColor(Color.BLACK);
-            headerViewHolder.endTime.setTextColor(Color.BLACK);
-            mListener.onKeyRemoved(Event.ERROR_TIME);
-        }
     }
 
     private void setTime(boolean start, boolean date, boolean time) {

@@ -41,14 +41,18 @@ public class Event implements Serializable {
     public void setLabelArray(ArrayMap<Integer, Integer> labelArray) {
         this.labelArray = labelArray;
     }
-    public Event editByChangeLog(Map<Integer, Integer> map) {
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-            if (entry.getKey() == START) {
-                start = entry.getValue();
-            } else if (entry.getKey() == END) {
-                end = entry.getValue();
+
+    public Event editByChangeLog(ArrayMap<Integer, Integer> map) {
+        for (int i = 0; i <= map.size() - 1; i++) {
+            if (map.keyAt(i) == START) {
+                start = map.valueAt(i);
+            } else if (map.keyAt(i) == END) {
+                end = map.valueAt(i);
             } else {
-                labelsMap.put(entry.getKey(), entry.getValue());
+                if (labelsMap == null) {
+                    labelsMap = new ArrayMap<>();
+                }
+                labelsMap.put(map.keyAt(i), map.valueAt(i));
             }
         }
         return this;

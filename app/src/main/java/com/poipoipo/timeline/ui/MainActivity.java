@@ -10,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -18,8 +19,6 @@ import com.facebook.stetho.Stetho;
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.database.DatabaseHelper;
 import com.poipoipo.timeline.dialog.EventEditorFragment;
-
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventEditorFragment.EventEditorListener {
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPositiveClick(int id, Map<Integer, Integer> changeLog) {
+    public void onPositiveClick(int id, ArrayMap<Integer, Integer> changeLog) {
         databaseHelper.update(id, changeLog);
         Toast.makeText(this, "Change Saved", Toast.LENGTH_SHORT).show();
     }

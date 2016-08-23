@@ -22,8 +22,6 @@ import com.poipoipo.timeline.data.Event;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.Map;
-
 public class EventEditorFragment extends DialogFragment
         implements Toolbar.OnMenuItemClickListener,
         EventEditorAdapter.OnEventChangedListener {
@@ -37,9 +35,10 @@ public class EventEditorFragment extends DialogFragment
     private RecyclerView recyclerView;
     private Snackbar errorSnackbar;
 
-    public static EventEditorFragment newInstance(Event event) {
+    public static EventEditorFragment newInstance(Event event, int position) {
         Bundle args = new Bundle();
         args.putSerializable("event", event);
+        args.putInt("position", position);
         EventEditorFragment fragment = new EventEditorFragment();
         fragment.setArguments(args);
         return fragment;
@@ -70,9 +69,10 @@ public class EventEditorFragment extends DialogFragment
                 .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mListener.onPositiveClick(event.getId(), changeLog);
-//                        changeLog.put(Event.POSITION, getArguments().getInt("position"));
-                        EventBus.getDefault().post(new EditedMessageEvent(getArguments().getInt("position"), changeLog));
+                        if (!changeLog.isEmpty()) {
+                            mListener.onPositiveClick(event.getId(), changeLog);
+                            EventBus.getDefault().post(new EditedMessageEvent(getArguments().getInt("position"), changeLog));
+                        }
                     }
                 })
                 .setNegativeButton("CANCEL", null);
@@ -82,18 +82,6 @@ public class EventEditorFragment extends DialogFragment
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         return false;
-    }
-
-    public void update(Event event, int position) {
-        if (getArguments() != null) {
-            getArguments().putSerializable("event", event);
-            getArguments().putInt("position", position);
-        } else {
-            Bundle args = new Bundle();
-            args.putSerializable("event", event);
-            args.putInt("position", position);
-            setArguments(args);
-        }
     }
 
     @Override
@@ -160,6 +148,6 @@ public class EventEditorFragment extends DialogFragment
     }
 
     public interface EventEditorListener {
-        void onPositiveClick(int start, Map<Integer, Integer> changeLog);
+        void onPositiveClick(int start, ArrayMap<Integer, Integer> changeLog);
     }
 }

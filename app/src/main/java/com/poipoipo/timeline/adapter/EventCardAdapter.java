@@ -3,7 +3,6 @@ package com.poipoipo.timeline.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +63,7 @@ public class EventCardAdapter
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fragment.update(event, holder.getAdapterPosition());
+                EventEditorFragment fragment = EventEditorFragment.newInstance(event, holder.getAdapterPosition());
                 fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
             }
         });
@@ -72,8 +71,8 @@ public class EventCardAdapter
 
     @Subscribe
     public void onEventEdited(EditedMessageEvent msg) {
-        Log.d(TAG, "onEventEdited: ");
-        events.set(msg.position, events.get(msg.position).editByChangeLog(msg.changeLog));
+        Event event = events.get(msg.position);
+        events.set(msg.position, event.editByChangeLog(msg.changeLog));
         notifyItemChanged(msg.position);
     }
 

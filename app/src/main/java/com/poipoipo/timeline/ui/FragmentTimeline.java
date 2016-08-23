@@ -79,7 +79,7 @@ public class FragmentTimeline extends Fragment
                 datePicker.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.fab:
-                EventEditorFragment eventEditor = EventEditorFragment.newInstance(new Event(TimestampUtil.getCurrentTimestamp(Calendar.getInstance())));
+                EventEditorFragment eventEditor = EventEditorFragment.newInstance(new Event(TimestampUtil.getCurrentTimestamp(Calendar.getInstance())), 0);
                 eventEditor.show(getActivity().getFragmentManager(), "eventEditor");
                 break;
             default:

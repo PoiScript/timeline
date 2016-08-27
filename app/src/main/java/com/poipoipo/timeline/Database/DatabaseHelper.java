@@ -13,7 +13,6 @@ import com.poipoipo.timeline.data.Label;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DatabaseHelper {
     private static final String DATABASE_NAME = "Event.db";
@@ -69,18 +68,18 @@ public class DatabaseHelper {
         database.insert(tag, null, values);
     }
 
-    public void update(int id, Map<Integer, Integer> map) {
+    public void update(int id, ArrayMap<Integer, Integer> map) {
         values.clear();
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-            if (entry.getKey() == Event.START) {
-                values.put("start", entry.getValue());
-            } else if (entry.getKey() == Event.END) {
-                values.put("end", entry.getValue());
+        for (int i = 0; i <= map.size() - 1; i++) {
+            if (map.keyAt(i) == Event.START) {
+                values.put("start", map.valueAt(i));
+            } else if (map.keyAt(i) == Event.END) {
+                values.put("end", map.valueAt(i));
             } else {
-                values.put(this.map.get(entry.getKey()).value, entry.getValue());
+                values.put(this.map.get(map.keyAt(i)).value, map.valueAt(i));
             }
         }
-        database.update(TABLE_EVENT, values, "start = ?", new String[]{Integer.toString(id)});
+        database.update(TABLE_EVENT, values, "id = ?", new String[]{Integer.toString(id)});
     }
 
     public void update(String label, String before, String after) {
@@ -134,9 +133,9 @@ public class DatabaseHelper {
                 Event event = new Event(cursor.getInt(cursor.getColumnIndex("id")));
                 event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
                 event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
-                for (int i = 0; i < map.size() ; i++){
-                    if (cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)) != 0){
-                       arrayMap.put(map.keyAt(i), cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)));
+                for (int i = 0; i < map.size(); i++) {
+                    if (cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)) != 0) {
+                        arrayMap.put(map.keyAt(i), cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)));
                     }
                 }
 

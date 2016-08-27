@@ -6,7 +6,7 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.widget.DatePicker;
 
-import com.poipoipo.timeline.data.DateMessageEvent;
+import com.poipoipo.timeline.messageEvent.DateMessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 

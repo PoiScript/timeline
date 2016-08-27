@@ -49,6 +49,7 @@ class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
     }
 
     private void insertDefaultData(SQLiteDatabase database) {

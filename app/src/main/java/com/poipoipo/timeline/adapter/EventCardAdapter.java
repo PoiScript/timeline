@@ -6,13 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.data.EditedMessageEvent;
 import com.poipoipo.timeline.data.Event;
-import com.poipoipo.timeline.dialog.EventEditorFragment;
-import com.poipoipo.timeline.ui.MainActivity;
+import com.poipoipo.timeline.messageEvent.EditedMessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,12 +21,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class EventCardAdapter
-        extends RecyclerView.Adapter<EventCardAdapter.EventsViewHolder> {
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "EventCardAdapter";
+    private static final int EVENT_LINK = 1;
+    private static final int EVENT_CARD = 2;
     private final SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final List<Event> events;
     private final Context context;
-    private EventEditorFragment fragment;
+    private int mExpandedPosition;
 
     public EventCardAdapter(List<Event> events, Context context) {
         this.events = events;
@@ -36,37 +37,34 @@ public class EventCardAdapter
     }
 
     @Override
-    public EventsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        fragment = new EventEditorFragment();
-        View view = LayoutInflater.from(context).inflate(R.layout.item_event_card, parent, false);
-        return new EventsViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == EVENT_CARD)
+            return new CardsViewHolder(LayoutInflater.from(context).inflate(R.layout.item_event_card, parent, false));
+        else
+            return new LinksViewHolder(LayoutInflater.from(context).inflate(R.layout.item_event_link, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(final EventsViewHolder holder, int position) {
-        final Event event = events.get(holder.getAdapterPosition());
-        if (event.hasTitle && event.hasSubtitle) {
-            holder.title.setText(new StringBuilder().append(event.getTitle()).append(": ").append(event.getSubtitle()));
-        } else if (event.hasTitle) {
-            holder.title.setText(event.getTitle());
-        } else if (event.hasSubtitle) {
-            holder.title.setText(event.getSubtitle());
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        if (getItemViewType(position) == EVENT_CARD) {
+            final boolean isExpanded = position == mExpandedPosition;
+            ((CardsViewHolder) holder).detail.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+            final Event event = events.get((holder.getAdapterPosition() - 1) / 2);
+            ((CardsViewHolder) holder).text.setText("Title Here");
+            ((CardsViewHolder) holder).cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mExpandedPosition = isExpanded ? -1 : position;
+//                    TransitionManager.beginDelayedTransition();
+                    notifyDataSetChanged();
+//                    EventEditorFragment fragment = EventEditorFragment.newInstance(event, holder.getAdapterPosition());
+//                    fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
+                }
+            });
         } else {
-            holder.title.setText(R.string.dialog_no_title);
+            final Event event = events.get((holder.getAdapterPosition()) / 2);
+            ((LinksViewHolder) holder).textView.setText(format.format(event.getStart() * 1000L));
         }
-        if (event.hasEndTime) {
-            holder.time.setText(new StringBuilder(format.format(event.getStart() * 1000L)).append(" - ").append(format.format(event.getEnd() * 1000L)));
-        } else {
-            holder.time.setText(format.format(event.getStart() * 1000L));
-        }
-        holder.location.setText(event.getLocation());
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EventEditorFragment fragment = EventEditorFragment.newInstance(event, holder.getAdapterPosition());
-                fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
-            }
-        });
     }
 
     @Subscribe
@@ -77,22 +75,35 @@ public class EventCardAdapter
     }
 
     @Override
-    public int getItemCount() {
-        return events.size();
+    public int getItemViewType(int position) {
+        if (position % 2 == 0) return EVENT_LINK;
+        else return EVENT_CARD;
     }
 
-    static class EventsViewHolder extends RecyclerView.ViewHolder {
-        final CardView cardView;
-        final TextView title;
-        final TextView time;
-        final TextView location;
+    @Override
+    public int getItemCount() {
+        return events.size() * 2;
+    }
 
-        public EventsViewHolder(final View view) {
+    static class CardsViewHolder extends RecyclerView.ViewHolder {
+        final CardView cardView;
+        final TextView text;
+        final RelativeLayout detail;
+
+        public CardsViewHolder(final View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.event_card);
-            title = (TextView) view.findViewById(R.id.event_title);
-            time = (TextView) view.findViewById(R.id.event_time);
-            location = (TextView) view.findViewById(R.id.event_location);
+            text = (TextView) view.findViewById(R.id.event_text);
+            detail = (RelativeLayout) view.findViewById(R.id.event_detail);
+        }
+    }
+
+    static class LinksViewHolder extends RecyclerView.ViewHolder {
+        final TextView textView;
+
+        public LinksViewHolder(final View view) {
+            super(view);
+            textView = (TextView) view.findViewById(R.id.event_link_date);
         }
     }
 }

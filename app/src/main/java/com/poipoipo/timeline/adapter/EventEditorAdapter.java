@@ -16,14 +16,14 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.data.DateMessageEvent;
 import com.poipoipo.timeline.data.Event;
 import com.poipoipo.timeline.data.Label;
-import com.poipoipo.timeline.data.TimeMessageEvent;
 import com.poipoipo.timeline.data.TimestampUtil;
 import com.poipoipo.timeline.database.DatabaseHelper;
 import com.poipoipo.timeline.dialog.DatePickerFragment;
 import com.poipoipo.timeline.dialog.TimePickerFragment;
+import com.poipoipo.timeline.messageEvent.DateMessageEvent;
+import com.poipoipo.timeline.messageEvent.TimeMessageEvent;
 import com.poipoipo.timeline.ui.MainActivity;
 
 import org.greenrobot.eventbus.EventBus;

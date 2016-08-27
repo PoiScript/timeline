@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
-import com.poipoipo.timeline.data.TimeMessageEvent;
+import com.poipoipo.timeline.messageEvent.TimeMessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 

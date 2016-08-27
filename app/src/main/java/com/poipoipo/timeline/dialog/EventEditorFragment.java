@@ -17,8 +17,8 @@ import android.view.View;
 
 import com.poipoipo.timeline.R;
 import com.poipoipo.timeline.adapter.EventEditorAdapter;
-import com.poipoipo.timeline.data.EditedMessageEvent;
 import com.poipoipo.timeline.data.Event;
+import com.poipoipo.timeline.messageEvent.EditedMessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 

@@ -62,7 +62,7 @@ public class FragmentTimeline extends Fragment
         LinearLayoutManager layoutManager = new LinearLayoutManager(mainActivity);
         recyclerView.setLayoutManager(layoutManager);
         initAdapterAndButton();
-        adapter = new EventCardAdapter(events, mainActivity);
+        adapter = new EventCardAdapter(events, mainActivity, recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);

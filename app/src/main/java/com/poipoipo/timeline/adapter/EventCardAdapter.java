@@ -3,10 +3,11 @@ package com.poipoipo.timeline.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.view.ViewStub;
 import android.widget.TextView;
 
 import com.poipoipo.timeline.R;
@@ -29,10 +30,12 @@ public class EventCardAdapter
     private final List<Event> events;
     private final Context context;
     private int mExpandedPosition;
+    private RecyclerView recyclerView;
 
-    public EventCardAdapter(List<Event> events, Context context) {
+    public EventCardAdapter(List<Event> events, Context context, RecyclerView recyclerView) {
         this.events = events;
         this.context = context;
+        this.recyclerView = recyclerView;
         EventBus.getDefault().register(this);
     }
 
@@ -45,17 +48,19 @@ public class EventCardAdapter
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == EVENT_CARD) {
             final boolean isExpanded = position == mExpandedPosition;
             ((CardsViewHolder) holder).detail.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
             final Event event = events.get((holder.getAdapterPosition() - 1) / 2);
-            ((CardsViewHolder) holder).text.setText("Title Here");
+            ((CardsViewHolder) holder).text.setText("Course");
+            ((CardsViewHolder) holder).duration.setText("23 hours 33 mins");
             ((CardsViewHolder) holder).cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mExpandedPosition = isExpanded ? -1 : position;
-//                    TransitionManager.beginDelayedTransition();
+                    mExpandedPosition = isExpanded ? -1 : holder.getAdapterPosition();
+                    ((CardsViewHolder) holder).duration.setCompoundDrawablesWithIntrinsicBounds(0, 0, isExpanded ? R.drawable.ic_expand_more_black_24dp : R.drawable.ic_expand_less_black_24dp, 0);
+                    TransitionManager.beginDelayedTransition(recyclerView);
                     notifyDataSetChanged();
 //                    EventEditorFragment fragment = EventEditorFragment.newInstance(event, holder.getAdapterPosition());
 //                    fragment.show(((MainActivity) context).getFragmentManager(), "dialog");
@@ -88,13 +93,17 @@ public class EventCardAdapter
     static class CardsViewHolder extends RecyclerView.ViewHolder {
         final CardView cardView;
         final TextView text;
-        final RelativeLayout detail;
+        //        final RelativeLayout detail;
+        final ViewStub detail;
+        final TextView duration;
 
         public CardsViewHolder(final View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.event_card);
             text = (TextView) view.findViewById(R.id.event_text);
-            detail = (RelativeLayout) view.findViewById(R.id.event_detail);
+//            detail = (RelativeLayout) view.findViewById(R.id.event_detail);
+            detail = (ViewStub) view.findViewById(R.id.event_detail_view_stub);
+            duration = (TextView) view.findViewById(R.id.event_duration);
         }
     }
 

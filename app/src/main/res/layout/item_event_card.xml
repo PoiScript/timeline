@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/event_card"
     android:layout_width="match_parent"
@@ -15,44 +14,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/event_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:padding="@dimen/dialog_icon_padding"
-                android:src="@drawable/ic_link" />
-
             <TextView
                 android:id="@+id/event_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/event_icon"
+                android:drawablePadding="@dimen/dialog_icon_padding"
+                android:drawableStart="@drawable/ic_location"
+                android:gravity="center_vertical"
                 android:padding="@dimen/dialog_icon_padding"
                 android:textStyle="bold" />
 
-            <ImageButton
-                style="@style/AppTheme.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_expand_more_black_24dp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/event_detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/event_duration"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="23333333333" />
+                android:layout_alignParentEnd="true"
+                android:drawableEnd="@drawable/ic_expand_more_black_24dp"
+                android:drawablePadding="@dimen/dialog_icon_padding"
+                android:gravity="center_vertical"
+                android:padding="@dimen/dialog_icon_padding" />
         </RelativeLayout>
 
+
+        <ViewStub
+            android:id="@+id/event_detail_view_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout="@layout/item_event_card_detail" />
     </LinearLayout>
-
-
 </android.support.v7.widget.CardView>

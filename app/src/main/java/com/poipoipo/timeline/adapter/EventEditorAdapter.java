@@ -141,10 +141,6 @@ public class EventEditorAdapter
             text.add(databaseHelper.map.valueAt(i).value);
             icon.add(databaseHelper.map.valueAt(i).icon);
         }
-//        for (Map.Entry<Integer, Label> entry : databaseHelper.labelMap.entrySet()) {
-//            text.add(entry.getValue().value);
-//            icon.add(entry.getValue().icon);
-//        }
         text.add("Remove");
         icon.add(R.drawable.ic_remove);
         adapter = new SpinnerAdapter(context, text, icon);

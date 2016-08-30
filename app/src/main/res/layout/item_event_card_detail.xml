@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/event_detail"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/event_content"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:drawableLeft="@drawable/ic_content"
-        android:drawablePadding="@dimen/dialog_icon_padding"
-        android:padding="@dimen/dialog_icon_padding"
+        style="@style/AppTheme.TextViewWithDrawable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Functions Of A Complex Variable And Integral Transforms"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/event_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/event_content"
-        android:drawableStart="@drawable/ic_date"
-        android:gravity="center_vertical"
-        android:padding="@dimen/dialog_icon_padding"
-        android:text="23:33 - 23:33" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/event_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/event_content"
-        android:layout_toEndOf="@id/event_date"
-        android:drawableStart="@drawable/ic_location"
-        android:gravity="center_vertical"
-        android:padding="@dimen/dialog_icon_padding"
-        android:text="Place Unknown" />
+        <TextView
+            android:id="@+id/event_date"
+            style="@style/AppTheme.TextViewWithDrawable"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:drawableStart="@drawable/ic_date" />
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/event_content"
-        android:src="@drawable/ic_mode_edit_black_24dp" />
-</RelativeLayout>
+        <TextView
+            android:id="@+id/event_location"
+            style="@style/AppTheme.TextViewWithDrawable"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_location"
+            android:text="Place Unknown" />
+
+        <ImageButton
+            android:id="@+id/event_editor"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:padding="@dimen/dialog_icon_padding"
+            android:src="@drawable/ic_mode_edit_black_24dp" />
+    </LinearLayout>
+
+</LinearLayout>

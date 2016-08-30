@@ -10,30 +10,26 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/event_text"
-                android:layout_width="wrap_content"
+                android:id="@+id/event_category"
+                style="@style/AppTheme.TextViewWithDrawable"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/dialog_icon_padding"
-                android:drawableStart="@drawable/ic_location"
-                android:gravity="center_vertical"
-                android:padding="@dimen/dialog_icon_padding"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_date"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/event_duration"
+                style="@style/AppTheme.TextViewWithDrawable"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:drawableEnd="@drawable/ic_expand_more_black_24dp"
-                android:drawablePadding="@dimen/dialog_icon_padding"
-                android:gravity="center_vertical"
-                android:padding="@dimen/dialog_icon_padding" />
-        </RelativeLayout>
+                android:drawableEnd="@drawable/ic_expand_more_black_24dp" />
+        </LinearLayout>
 
 
         <ViewStub

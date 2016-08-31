@@ -4,6 +4,12 @@
     <item
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/timeline_toolbar_notification"
+        android:orderInCategory="99"
+        android:title="Notification"
+        app:showAsAction="never" />
 
 </menu>

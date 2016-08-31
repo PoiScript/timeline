@@ -23,7 +23,7 @@ public class DatabaseHelper {
     private final SQLiteDatabase database;
     private final ContentValues values = new ContentValues();
     private final List<Event> events = new ArrayList<>();
-    private Cursor cursor;
+    private Cursor mCursor;
 
     public DatabaseHelper(Context context) {
         database = new DatabaseOpenHelper(context, DATABASE_NAME, null, VERSION).getWritableDatabase();
@@ -32,34 +32,28 @@ public class DatabaseHelper {
     }
 
     private void initMap() {
-        cursor = database.query("AllLabel", null, null, null, null, null, null);
+        mCursor = database.query("AllLabel", null, null, null, null, null, null);
         int i = 0;
-        if (cursor.moveToFirst()) {
+        if (mCursor.moveToFirst()) {
             do {
-                map.put(cursor.getInt(cursor.getColumnIndex("id")),
-                        getLabel(cursor.getString(cursor.getColumnIndex("label")), cursor.getInt(cursor.getColumnIndex("id")), i++));
-            } while (cursor.moveToNext());
+                Label label = new Label(getLabelIcon(mCursor.getInt(mCursor.getColumnIndex("id"))), mCursor.getString(mCursor.getColumnIndex("label")), i++);
+                Cursor cursor = database.query(mCursor.getString(mCursor.getColumnIndex("label")), null, null, null, null, null, null);
+                if (cursor.moveToFirst()) {
+                    do {
+                        label.add(cursor.getInt(cursor.getColumnIndex("id")), cursor.getString(cursor.getColumnIndex("value")), cursor.getInt(cursor.getColumnIndex("usage")));
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                map.put(mCursor.getInt(mCursor.getColumnIndex("id")), label);
+            } while (mCursor.moveToNext());
         }
-        cursor.close();
-    }
-
-    private Label getLabel(String tableName, int id, int position) {
-        Label label = new Label(getLabelIcon(id), tableName, position);
-        Cursor cursor = database.query(tableName, null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                label.add(cursor.getInt(cursor.getColumnIndex("id")), cursor.getString(cursor.getColumnIndex("value")), cursor.getInt(cursor.getColumnIndex("usage")));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return label;
+        mCursor.close();
     }
 
     public void insertEvent(int start) {
         values.clear();
         values.put("start", start);
         database.insert(TABLE_EVENT, null, values);
-
     }
 
     public void insertLabel(String tag, String value) {
@@ -100,58 +94,58 @@ public class DatabaseHelper {
         database.delete(label, "value  = ?", new String[]{which});
     }
 
-    public Event query(int id) {
+    public Event queryEvent(int id) {
         String where = "id = ? ";
         String[] whereValues = {Integer.toString(id)};
-        cursor = database.query(TABLE_EVENT, null, where, whereValues, null, null, null);
+        mCursor = database.query(TABLE_EVENT, null, where, whereValues, null, null, null);
         Event event = new Event(id);
-        if (cursor.moveToFirst()) {
+        if (mCursor.moveToFirst()) {
             do {
                 ArrayMap<Integer, Integer> array = new ArrayMap<>();
-                event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
-                event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
+                event.setStart(mCursor.getInt(mCursor.getColumnIndex("start")));
+                event.setEnd(mCursor.getInt(mCursor.getColumnIndex("end")));
                 for (int i = 0; i < map.size(); i++) {
-                    if (cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)) != 0) {
-                        array.put(map.keyAt(i), cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)));
+                    if (mCursor.getInt(mCursor.getColumnIndex(map.valueAt(i).value)) != 0) {
+                        array.put(map.keyAt(i), mCursor.getInt(mCursor.getColumnIndex(map.valueAt(i).value)));
                     }
                 }
                 event.setLabelArray(array);
-            } while (cursor.moveToNext());
+            } while (mCursor.moveToNext());
         }
-        cursor.close();
+        mCursor.close();
         return event;
     }
 
-    public List<Event> query(int dataMin, int dataMax) {
+    public List<Event> queryEvents(int dataMin, int dataMax) {
         String where = "start < ? and start > ?";
         String[] whereValues = {Integer.toString(dataMax), Integer.toString(dataMin)};
-        cursor = database.query(TABLE_EVENT, null, where, whereValues, null, null, null);
+        mCursor = database.query(TABLE_EVENT, null, where, whereValues, null, null, null);
         events.clear();
-        if (cursor.moveToFirst()) {
+        if (mCursor.moveToFirst()) {
             do {
                 ArrayMap<Integer, Integer> arrayMap = new ArrayMap<>();
-                Event event = new Event(cursor.getInt(cursor.getColumnIndex("id")));
-                event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
-                event.setEnd(cursor.getInt(cursor.getColumnIndex("end")));
+                Event event = new Event(mCursor.getInt(mCursor.getColumnIndex("id")));
+                event.setStart(mCursor.getInt(mCursor.getColumnIndex("start")));
+                event.setEnd(mCursor.getInt(mCursor.getColumnIndex("end")));
                 for (int i = 0; i < map.size(); i++) {
-                    if (cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)) != 0) {
-                        arrayMap.put(map.keyAt(i), cursor.getInt(cursor.getColumnIndex(map.valueAt(i).value)));
+                    if (mCursor.getInt(mCursor.getColumnIndex(map.valueAt(i).value)) != 0) {
+                        arrayMap.put(map.keyAt(i), mCursor.getInt(mCursor.getColumnIndex(map.valueAt(i).value)));
                     }
                 }
 
                 event.setLabelArray(arrayMap);
                 events.add(event);
-            } while (cursor.moveToNext());
+            } while (mCursor.moveToNext());
         }
-        cursor.close();
+        mCursor.close();
         return events;
     }
 
     public Event queryLastEvent() {
-        cursor = database.query(TABLE_EVENT, null, null, null, null, null, null);
-        cursor.moveToLast();
-        Event event = new Event(cursor.getInt(cursor.getColumnIndex("id")));
-        event.setStart(cursor.getInt(cursor.getColumnIndex("start")));
+        mCursor = database.query(TABLE_EVENT, null, null, null, null, null, null);
+        mCursor.moveToLast();
+        Event event = new Event(mCursor.getInt(mCursor.getColumnIndex("id")));
+        event.setStart(mCursor.getInt(mCursor.getColumnIndex("start")));
         return event;
     }
 

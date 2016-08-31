@@ -1,6 +1,9 @@
 package com.poipoipo.timeline.ui;
 
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -88,7 +91,7 @@ public class FragmentTimeline extends Fragment
 
     private void initAdapterAndButton() {
         editDate.setText(format.format(shownDate.getTime()));
-        events = mainActivity.databaseHelper.query(TimestampUtil.getDayTimestampByCalendar(shownDate), TimestampUtil.getDayTimestampByCalendar(shownDate) + 24 * 60 * 60);
+        events = mainActivity.databaseHelper.queryEvents(TimestampUtil.getDayTimestampByCalendar(shownDate), TimestampUtil.getDayTimestampByCalendar(shownDate) + 24 * 60 * 60);
     }
 
     @Override
@@ -122,6 +125,9 @@ public class FragmentTimeline extends Fragment
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = new Notification(R.drawable.ic_content, "This is a notification", System.currentTimeMillis());
+        manager.notify(1, notification);
         Log.d("TEST", "TEST");
         return false;
     }

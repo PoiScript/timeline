@@ -86,7 +86,6 @@ public class EventCardAdapter
                 viewHolder.detail.setVisibility(View.GONE);
                 viewHolder.duration.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_expand_less_black_24dp, 0);
             }
-//            ((CardsViewHolder) holder).detail.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         } else {
             final Event event = events.get((holder.getAdapterPosition()) / 2);
             ((LinksViewHolder) holder).textView.setText(format.format(event.getStart() * 1000L));

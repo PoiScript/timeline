@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.poipoipo.timeline.R;
-import com.poipoipo.timeline.data.Label;
 
 public class FragmentLabels extends Fragment {
 
@@ -19,11 +18,6 @@ public class FragmentLabels extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         switch (type) {
-            case Label.TITLE:
-                break;
-            case Label.LOCATION:
-                break;
-            case Label.SUBTITLE:
         }
     }
 

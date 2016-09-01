@@ -9,56 +9,50 @@ class DatabaseOpenHelper extends SQLiteOpenHelper {
     private static final String CREATE_EVENT = "create table Event ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "start INTEGER, "
-            + "end INTEGER)";
+            + "end INTEGER, "
+            + "category INTEGER, "
+            + "content INTEGER)";
 
-    private static final String CREATE_ALL_LABEL = "create table AllLabel ("
+    private static final String CREATE_FIELD = "create table Field ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "label TEXT)";
+            + "field_id INTEGER, "
+            + "label_id INTEGER, "
+            + "name TEXT)";
 
-    private static final String CREATE_NEW_LABEL_PART_1 = "create table ";
-    private static final String CREATE_NEW_LABEL_PART_2 = " ("
+    private static final String CREATE_CATEGORY = "create table Category ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "parent INTEGER, "
-            + "value TEXT, "
-            + "usage INTEGER)";
-    private static final String EVENT_ADD_COLUMN_PART_1 = "alter table Event add column ";
-    private static final String EVENT_ADD_COLUMN_PART_2 = " integer";
+            + "category_id INTEGER, "
+            + "content_id INTEGER, "
+            + "name TEXT)";
 
-    private static final String[] defaultTitle = {"Course", "Breakfast", "Lunch", "Dinner", "Brunch", "Cook"};
-    private static final String[] defaultCourseSubtitle = {"Further Mathematics", "Linear Algebra", "Discrete Mathematics", "Digital Signal Process", "Probability And Statistics"};
-    private static final String[] defaultLabels = {"Title", "Subtitle", "Location"};
-
-    private final Context mContext;
+    private static final String[] defaultCategory = {"Course", "Breakfast", "Lunch", "Dinner", "Brunch", "Cook"};
+    private static final String[] defaultCourse = {"Further Mathematics", "Linear Algebra", "Discrete Mathematics", "Digital Signal Process", "Probability And Statistics"};
 
     public DatabaseOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
-        mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_EVENT);
-        db.execSQL(CREATE_ALL_LABEL);
-        for (String label : defaultLabels) {
-            db.execSQL(CREATE_NEW_LABEL_PART_1 + label + CREATE_NEW_LABEL_PART_2);
-            db.execSQL(EVENT_ADD_COLUMN_PART_1 + label + EVENT_ADD_COLUMN_PART_2);
-            db.execSQL("insertEvent into AllLabel (label) values(?)", new String[]{label});
-        }
-        insertDefaultData(db);
+        db.execSQL(CREATE_CATEGORY);
+        db.execSQL(CREATE_FIELD);
+        insertCategories(defaultCategory, db);
+        insertContents(defaultCourse, db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
 
-    private void insertDefaultData(SQLiteDatabase database) {
-        for (String title : defaultTitle) {
-            database.execSQL("insertEvent into Title (value) values(?)", new String[]{title});
-        }
-        for (String subtitle : defaultCourseSubtitle) {
-            database.execSQL("insertEvent into Subtitle (label) values(?)", new String[]{subtitle});
-        }
+    private void insertCategories(String[] categories, SQLiteDatabase db) {
+        for (int i = 0; i < categories.length; )
+            db.execSQL("insert into Category (name, category_id, content_id) values(?, ?, ?)", new String[]{categories[i], Integer.toString(++i), Integer.toString(0)});
+    }
+
+    private void insertContents(String[] contents, SQLiteDatabase db) {
+        for (int i = 0; i < contents.length; )
+            db.execSQL("insert into Category (name, category_id, content_id) values(?, ?, ?)", new String[]{contents[i], Integer.toString(1), Integer.toString(++i)});
     }
 }
 

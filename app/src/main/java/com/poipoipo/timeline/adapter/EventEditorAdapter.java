@@ -54,14 +54,13 @@ public class EventEditorAdapter
     private boolean hadError;
     private SpinnerAdapter adapter;
 
-    public EventEditorAdapter(Event event, Context context, OnEventChangedListener mListener) {
-        this.map = event.getLabelArray();
-        startCalendar.setTimeInMillis(event.getStart() * 1000L);
-        if (event.getEnd() != 0) {
-            endCalendar.setTimeInMillis(event.getEnd() * 1000L);
-        } else {
+    public EventEditorAdapter(Event event_old, ArrayMap<Integer, Integer> event, Context context, OnEventChangedListener mListener) {
+        this.map = event;
+        startCalendar.setTimeInMillis(event.get(DatabaseHelper.EVENT_START) * 1000L);
+        if (event_old.getEnd() != 0)
+            endCalendar.setTimeInMillis(event.get(DatabaseHelper.EVENT_END) * 1000L);
+        else
             endCalendar = startCalendar;
-        }
         this.context = context;
         manager = ((MainActivity) context).getFragmentManager();
         this.mListener = mListener;

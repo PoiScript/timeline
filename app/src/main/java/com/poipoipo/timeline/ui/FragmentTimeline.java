@@ -10,7 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +42,7 @@ public class FragmentTimeline extends Fragment
     private MainActivity mainActivity;
     private Button editDate;
     private EventCardAdapter adapter;
-    private List<Event> events;
+    private List<ArrayMap<Integer, Integer>> events;
     private Calendar shownDate = Calendar.getInstance();
 
     @Nullable
@@ -86,12 +86,13 @@ public class FragmentTimeline extends Fragment
                 eventEditor.show(getActivity().getFragmentManager(), "eventEditor");
                 break;
             default:
+                break;
         }
     }
 
     private void initAdapterAndButton() {
         editDate.setText(format.format(shownDate.getTime()));
-        events = mainActivity.databaseHelper.queryEvents(TimestampUtil.getDayTimestampByCalendar(shownDate), TimestampUtil.getDayTimestampByCalendar(shownDate) + 24 * 60 * 60);
+        events = mainActivity.databaseHelper.queryEvent(TimestampUtil.getDayTimestampByCalendar(Calendar.getInstance()));
     }
 
     @Override
@@ -102,7 +103,7 @@ public class FragmentTimeline extends Fragment
                 && shownDate.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
                 && shownDate.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH)) {
             events.add(mainActivity.databaseHelper.queryLastEvent());
-            adapter.notifyItemInserted(events.size());
+            adapter.notifyItemInserted(adapter.getItemCount());
         }
         Toast.makeText(mainActivity, "Event Created", Toast.LENGTH_SHORT).show();
         return true;
@@ -125,10 +126,12 @@ public class FragmentTimeline extends Fragment
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        Notification.Builder builder = new Notification.Builder(getActivity())
+                .setSmallIcon(R.drawable.ic_content)
+                .setContentTitle("Title Here")
+                .setContentText("Content Here");
         NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = new Notification(R.drawable.ic_content, "This is a notification", System.currentTimeMillis());
-        manager.notify(1, notification);
-        Log.d("TEST", "TEST");
+        manager.notify(1, builder.build());
         return false;
     }
 }
